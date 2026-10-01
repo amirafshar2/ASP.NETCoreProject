@@ -1,0 +1,34 @@
+@model List<Contact>
+@{
+    ViewData["Title"] = "Kontaktanfragen";
+}
+<div class="card-x">
+    @if (!Model.Any())
+    {
+        <div class="empty"><i class="fa-regular fa-envelope-open"></i><h3>Keine Kontaktanfragen</h3><p>Nachrichten aus dem Kontaktformular erscheinen hier.</p></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table-x">
+                <thead><tr><th>Absender</th><th>Betreff</th><th>Eingang</th><th><span class="visually-hidden">Aktionen</span></th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr class="@(!c.IsRead ? "is-unread" : null)">
+                            <td><strong>@c.UserName</strong><div class="sub">@c.Mail</div></td>
+                            <td style="min-width:260px"><a class="subject text-decoration-none" asp-action="Read" asp-route-id="@c.Id">@c.Subject</a><div class="sub">@ViewHelpers.Short(c.Message, 90)</div></td>
+                            <td class="sub">@ViewHelpers.Relative(c.Date)</td>
+                            <td>
+                                <div class="row-actions">
+                                    <a class="btn btn-ghost btn-icon" asp-action="Read" asp-route-id="@c.Id" title="Öffnen" aria-label="Öffnen"><i class="fa-regular fa-envelope-open"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@c.Id" method="post" data-confirm="Die Nachricht von @c.UserName wird gelöscht." data-confirm-title="Nachricht löschen?"><button class="btn btn-danger-ghost btn-icon" type="submit" title="Löschen" aria-label="Löschen"><i class="fa-regular fa-trash-can"></i></button></form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

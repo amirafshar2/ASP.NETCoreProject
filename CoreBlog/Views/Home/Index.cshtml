@@ -1,0 +1,140 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = Model.ActiveCategory?.Name ?? (Model.Search != null ? $"Suche: {Model.Search}" : null);
+    var pager = new PagerModel
+    {
+        Page = Model.Blogs.Page,
+        TotalPages = Model.Blogs.TotalPages,
+        RouteValues = new() { ["category"] = Model.ActiveCategory?.Id.ToString(), ["q"] = Model.Search }
+    };
+}
+
+@if (!Model.IsFiltered && Model.Featured != null)
+{
+    var f = Model.Featured;
+    <section class="front">
+        <div class="wrap front-grid">
+            <a class="lead-story" asp-controller="Blog" asp-action="Detail" asp-route-id="@f.Id" asp-route-slug="@ViewHelpers.Slug(f.Title)">
+                <div class="media"><img src="@f.Image" alt="" /></div>
+                <div class="body">
+                    <h1><span>@f.Title</span></h1>
+                    <p>@f.Summary</p>
+                    <div class="byline">
+                        <img class="avatar" src="@ViewHelpers.Avatar(f.Writer.Image)" width="32" height="32" alt="" />
+                        <strong>@f.Writer.Name</strong><span class="sep"></span>
+                        <span class="chip" style="--c:@f.Category.Color"><span class="dot"></span>@f.Category.Name</span><span class="sep"></span>
+                        <span>@f.ReadingMinutes Min. Lesezeit</span>
+                    </div>
+                </div>
+            </a>
+            <div class="side-stories">
+                <h2>Ebenfalls neu</h2>
+                @foreach (var b in Model.Secondary)
+                {
+                    <a class="side-story" asp-controller="Blog" asp-action="Detail" asp-route-id="@b.Id" asp-route-slug="@ViewHelpers.Slug(b.Title)">
+                        <img src="@b.Image" alt="" loading="lazy" />
+                        <div>
+                            <span class="chip" style="--c:@b.Category.Color"><span class="dot"></span>@b.Category.Name</span>
+                            <h3>@b.Title</h3>
+                            <div class="meta">@b.Writer.Name, @ViewHelpers.Relative(b.CreateDate)</div>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<nav class="topic-strip" aria-label="Kategorien">
+    <div class="wrap">
+        <span class="label">Themen</span>
+        <a class="chip @(Model.ActiveCategory == null ? "is-active" : null)" asp-controller="Home" asp-action="Index">Alle</a>
+        @foreach (var c in Model.Categories)
+        {
+            <a class="chip @(Model.ActiveCategory?.Id == c.Id ? "is-active" : null)" style="--c:@c.Color" asp-controller="Home" asp-action="Index" asp-route-category="@c.Id">
+                <span class="dot"></span>@c.Name <span class="count">@c.Blogs.Count</span>
+            </a>
+        }
+    </div>
+</nav>
+
+<div class="wrap main-grid">
+    <section aria-labelledby="posts-title">
+        @if (Model.IsFiltered)
+        {
+            <div class="filter-note">
+                <i class="fa-solid fa-filter"></i>
+                <span>
+                    @Model.Blogs.TotalCount @(Model.Blogs.TotalCount == 1 ? "Beitrag" : "Beiträge")
+                    @if (Model.ActiveCategory != null) { <text>in <strong>@Model.ActiveCategory.Name</strong></text> }
+                    @if (!string.IsNullOrEmpty(Model.Search)) { <text>für „<strong>@Model.Search</strong>“</text> }
+                </span>
+                <a class="btn btn-ghost btn-sm ms-auto" asp-controller="Home" asp-action="Index">Filter entfernen</a>
+            </div>
+            @if (Model.ActiveCategory != null)
+            {
+                <div class="section-head"><h2 id="posts-title">@Model.ActiveCategory.Name</h2><p>@Model.ActiveCategory.Description</p></div>
+            }
+            else
+            {
+                <h2 id="posts-title" class="visually-hidden">Suchergebnisse</h2>
+            }
+        }
+        else
+        {
+            <div class="section-head"><h2 id="posts-title">Weitere Beiträge</h2><p>Seite @Model.Blogs.Page von @Model.Blogs.TotalPages</p></div>
+        }
+
+        @if (!Model.Blogs.Items.Any())
+        {
+            <div class="empty">
+                <i class="fa-regular fa-file-lines"></i>
+                <h3>Keine Beiträge gefunden</h3>
+                <p>Versuchen Sie einen anderen Suchbegriff oder wählen Sie eine andere Kategorie.</p>
+                <a class="btn btn-ink" asp-controller="Home" asp-action="Index">Alle Beiträge anzeigen</a>
+            </div>
+        }
+        else
+        {
+            <div class="post-grid">
+                @foreach (var b in Model.Blogs.Items)
+                {
+                    <partial name="_PostCard" model="b" />
+                }
+            </div>
+            <partial name="_Pager" model="pager" />
+        }
+    </section>
+
+    <aside>
+        <section class="side-block">
+            <h2>Meistgelesen</h2>
+            <ol class="popular">
+                @foreach (var b in Model.Popular)
+                {
+                    <li>
+                        <div>
+                            <a asp-controller="Blog" asp-action="Detail" asp-route-id="@b.Id" asp-route-slug="@ViewHelpers.Slug(b.Title)">@b.Title</a>
+                            <div class="meta">@b.ViewCount.ToString("N0") Aufrufe</div>
+                        </div>
+                    </li>
+                }
+            </ol>
+        </section>
+
+        <section class="side-block">
+            <h2>Unsere Autorinnen und Autoren</h2>
+            <div class="authors">
+                @foreach (var w in Model.Writers)
+                {
+                    <a class="author-row" asp-controller="Blog" asp-action="Author" asp-route-id="@w.Id">
+                        <img class="avatar" src="@ViewHelpers.Avatar(w.Image)" width="44" height="44" alt="" />
+                        <div><strong>@w.Name</strong><span>@w.Blogs.Count(b => b.Status) Beiträge</span></div>
+                    </a>
+                }
+            </div>
+        </section>
+
+        <partial name="_NewsletterBox" />
+    </aside>
+</div>

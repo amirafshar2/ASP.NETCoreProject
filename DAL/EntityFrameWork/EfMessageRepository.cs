@@ -1,22 +1,32 @@
-﻿using BE.concrete;
+using BE.Concrete;
 using DAL.Abstract;
-using DAL.Context;
-using DAL.Repostory;
+using DAL.Concrete;
+using DAL.Repository;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DAL.EntityFrameWork
+namespace DAL.EntityFramework
 {
-    public class EfMessageRepository : GenericRepository<Message2>, IMessageDAL
+    public class EfMessageRepository : GenericRepository<Message>, IMessageDAL
     {
-        DB db = new DB();
-        public List<Message2> MessageListBaySenderAndReciver(int id)
-        {
-            return db.messages2.Include(i=>i.SenderUser).Include(l=>l.ReceiverUser).Where(b=>b.Receiverid==id).ToList();
-        }
+        public EfMessageRepository(Context context) : base(context) { }
+
+        public List<Message> GetInbox(int writerId) => _context.Messages
+            .AsNoTracking()
+            .Include(m => m.Sender)
+            .Where(m => m.ReceiverId == writerId)
+            .OrderByDescending(m => m.Date)
+            .ToList();
+
+        public List<Message> GetSent(int writerId) => _context.Messages
+            .AsNoTracking()
+            .Include(m => m.Receiver)
+            .Where(m => m.SenderId == writerId)
+            .OrderByDescending(m => m.Date)
+            .ToList();
+
+        public Message GetByIdWithWriters(int id) => _context.Messages
+            .Include(m => m.Sender)
+            .Include(m => m.Receiver)
+            .FirstOrDefault(m => m.Id == id);
     }
 }

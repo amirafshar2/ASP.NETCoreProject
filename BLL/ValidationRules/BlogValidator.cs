@@ -1,10 +1,5 @@
-﻿using BE.concrete;
+using BE.Concrete;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.ValidationRules
 {
@@ -12,15 +7,15 @@ namespace BLL.ValidationRules
     {
         public BlogValidator()
         {
-            RuleFor(x => x.Title).NotEmpty().WithMessage("Blog başlığı boş bırakılamaz");
-            RuleFor(x => x.Content).NotEmpty().WithMessage("Blog içeriği boş bırakılamaz");
-            RuleFor(x => x.İmage).NotEmpty().WithMessage("Blog Görselini boş bırakılamaz");
-            RuleFor(x => x.Title).MaximumLength(150).WithMessage("Lütfen 150 karekterden az veri girin");
-            RuleFor(x => x.Content).MaximumLength(10000).WithMessage("Lütfen 10000 karekterden az veri girin");
-            RuleFor(x => x.Title).MinimumLength(5).WithMessage("Lütfen 4 karekterden daha fazla veri girin");
-            RuleFor(x => x.Content).MinimumLength(500).WithMessage("Lütfen 500 karekterden daha fazla veri girin");
-
+            RuleFor(x => x.Title).NotEmpty().WithMessage("Bitte geben Sie einen Titel ein.")
+                .MinimumLength(5).WithMessage("Der Titel muss mindestens 5 Zeichen lang sein.")
+                .MaximumLength(150).WithMessage("Der Titel darf höchstens 150 Zeichen lang sein.");
+            RuleFor(x => x.Summary).NotEmpty().WithMessage("Bitte geben Sie einen kurzen Teaser ein.")
+                .MaximumLength(300).WithMessage("Der Teaser darf höchstens 300 Zeichen lang sein.");
+            RuleFor(x => x.Content).NotEmpty().WithMessage("Bitte schreiben Sie den Inhalt des Beitrags.")
+                .MinimumLength(200).WithMessage("Der Inhalt muss mindestens 200 Zeichen lang sein.")
+                .MaximumLength(20000).WithMessage("Der Inhalt darf höchstens 20.000 Zeichen lang sein.");
+            RuleFor(x => x.CategoryId).GreaterThan(0).WithMessage("Bitte wählen Sie eine Kategorie.");
         }
-
     }
 }

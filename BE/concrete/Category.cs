@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BE.concrete
+namespace BE.Concrete
 {
     public class Category
     {
-        [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public bool Status { get; set; }
-        public List<Blog> Blogs { get; set; }
-
-
+        /// <summary>Akzentfarbe der Kategorie (Hex), z. B. für Badges.</summary>
+        public string Color { get; set; } = "#2F5BEA";
+        public bool Status { get; set; } = true;
+        public List<Blog> Blogs { get; set; } = new();
     }
 }

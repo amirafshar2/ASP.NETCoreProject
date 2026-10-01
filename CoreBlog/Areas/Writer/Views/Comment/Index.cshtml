@@ -1,0 +1,31 @@
+@model List<Comment>
+@{
+    ViewData["Title"] = "Kommentare zu meinen Beiträgen";
+}
+<div class="card-x">
+    <div class="head"><div><h2>@Model.Count Kommentare</h2><p>Ausgeblendete Kommentare sind nur hier und im Admin-Panel sichtbar.</p></div></div>
+    @if (!Model.Any())
+    {
+        <div class="empty"><i class="fa-regular fa-comments"></i><h3>Noch keine Kommentare</h3><p>Sobald Leserinnen und Leser Ihre Beiträge kommentieren, erscheinen sie hier.</p></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table-x">
+                <thead><tr><th>Kommentar</th><th>Beitrag</th><th>Bewertung</th><th>Status</th><th>Datum</th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td style="min-width:280px"><strong>@c.Title</strong><div>@c.Content</div><div class="sub">@c.UserName</div></td>
+                            <td><a asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@c.BlogId" target="_blank">@ViewHelpers.Short(c.Blog.Title, 50)</a></td>
+                            <td>@ViewHelpers.Stars(c.Score)</td>
+                            <td><span class="status @(c.Status ? "status-on" : "status-off")">@(c.Status ? "Sichtbar" : "Ausgeblendet")</span></td>
+                            <td class="sub">@ViewHelpers.Relative(c.Date)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

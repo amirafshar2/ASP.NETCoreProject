@@ -1,16 +1,19 @@
-﻿using BE.concrete;
+using BE.Concrete;
 using DAL.Abstract;
-using DAL.Repostory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DAL.Concrete;
+using DAL.Repository;
+using Microsoft.EntityFrameworkCore;
 
-namespace DAL.EntityFrameWork
+namespace DAL.EntityFramework
 {
-    public class EfCategoryRepository : GenericRepository<Category>,ICategoryDAL
+    public class EfCategoryRepository : GenericRepository<Category>, ICategoryDAL
     {
+        public EfCategoryRepository(Context context) : base(context) { }
 
+        public List<Category> GetListWithBlogCount() => _context.Categories
+            .AsNoTracking()
+            .Include(c => c.Blogs.Where(b => b.Status))
+            .OrderBy(c => c.Name)
+            .ToList();
     }
 }

@@ -1,0 +1,11 @@
+@model Blog
+<a class="post-card" asp-controller="Blog" asp-action="Detail" asp-route-id="@Model.Id" asp-route-slug="@ViewHelpers.Slug(Model.Title)">
+    <div class="media"><img src="@Model.Image" alt="" loading="lazy" /></div>
+    <div><span class="chip" style="--c:@Model.Category.Color"><span class="dot"></span>@Model.Category.Name</span></div>
+    <h3>@Model.Title</h3>
+    <p>@ViewHelpers.Short(Model.Summary, 150)</p>
+    <div class="byline">
+        <img class="avatar" src="@ViewHelpers.Avatar(Model.Writer.Image)" width="26" height="26" alt="" />
+        <strong>@Model.Writer.Name</strong><span class="sep"></span><span>@Model.CreateDate.ToString("d. MMM yyyy")</span><span class="sep"></span><span>@Model.ReadingMinutes Min.</span>
+    </div>
+</a>

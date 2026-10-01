@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Kein Zugriff";
+}
+<section class="error-page">
+    <div class="wrap">
+        <div class="code"><span class="marker">403</span></div>
+        <h1>Für diesen Bereich fehlt die Berechtigung</h1>
+        <p>Sie sind angemeldet, aber Ihr Konto hat keinen Zugriff auf diese Seite. Das Admin-Panel ist nur für Administratoren freigegeben.</p>
+        <a class="btn btn-ink" asp-area="Writer" asp-controller="Dashboard" asp-action="Index">Zum Autorenbereich</a>
+        <a class="btn btn-ghost ms-2" asp-area="" asp-controller="Demo" asp-action="Admin">Als Demo-Admin anmelden</a>
+    </div>
+</section>

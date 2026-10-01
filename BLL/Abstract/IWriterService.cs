@@ -1,16 +1,12 @@
-﻿using BE.concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BE.Concrete;
 
 namespace BLL.Abstract
 {
     public interface IWriterService : IGenericService<Writer>
     {
-       public List<Writer> GetWriterBayId(int id);
-        public void Updatew(int id, Writer w);
-        Writer GetWriterBayEmail(string e);
+        Writer GetByMail(string mail);
+        Writer GetByAppUserId(int appUserId);
+        List<Writer> GetListWithBlogs();
+        void ToggleStatus(int id);
     }
 }

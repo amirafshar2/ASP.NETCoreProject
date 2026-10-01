@@ -1,0 +1,38 @@
+@model Category
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "Neue Kategorie" : $"Kategorie „{Model.Name}“";
+}
+<div class="card-x narrow">
+    <div class="body">
+        <form asp-action="@(isNew ? "Create" : "Edit")" method="post" novalidate>
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3">
+                <label class="form-label" asp-for="Name">Name</label>
+                <input class="form-control" asp-for="Name" maxlength="60" />
+                <span class="field-validation-error" asp-validation-for="Name"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="Description">Beschreibung</label>
+                <textarea class="form-control" asp-for="Description" rows="3" maxlength="300"></textarea>
+                <span class="field-validation-error" asp-validation-for="Description"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="Color">Farbe</label>
+                <div class="d-flex gap-2 align-items-center">
+                    <input class="form-control form-control-color color-input" asp-for="Color" type="color" />
+                    <span class="form-text">Wird für Markierungen und Diagramme verwendet.</span>
+                </div>
+                <span class="field-validation-error" asp-validation-for="Color"></span>
+            </div>
+            <div class="switch-row form-switch">
+                <label class="form-check-label" for="Status"><strong>Auf der Website anzeigen</strong></label>
+                <input class="form-check-input" type="checkbox" role="switch" asp-for="Status" />
+            </div>
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-ink" type="submit">@(isNew ? "Kategorie anlegen" : "Änderungen speichern")</button>
+                <a class="btn btn-ghost" asp-action="Index">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,42 @@
+@model AboutEditViewModel
+@{
+    ViewData["Title"] = "Seite „Über uns“";
+}
+@section Actions { <a class="btn btn-ghost btn-sm" asp-area="" asp-controller="About" asp-action="Index" target="_blank"><i class="fa-regular fa-eye me-1"></i>Seite ansehen</a> }
+<form asp-action="Index" method="post" enctype="multipart/form-data" novalidate>
+    <input type="hidden" asp-for="About.Id" />
+    <div class="form-layout">
+        <div class="card-x">
+            <div class="body">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="About.Title">Überschrift</label>
+                    <input class="form-control" asp-for="About.Title" />
+                    <span class="field-validation-error" asp-validation-for="About.Title"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="About.Details1">Einleitung</label>
+                    <textarea class="form-control" asp-for="About.Details1" rows="4"></textarea>
+                    <span class="field-validation-error" asp-validation-for="About.Details1"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="About.Details2">Abschnitt „So arbeiten wir“</label>
+                    <textarea class="form-control" asp-for="About.Details2" rows="5"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="About.MapLocation">Standort der Redaktion</label>
+                    <input class="form-control" asp-for="About.MapLocation" />
+                </div>
+                <button class="btn btn-ink" type="submit">Änderungen speichern</button>
+            </div>
+        </div>
+        <div class="card-x">
+            <div class="head"><h2>Bild</h2></div>
+            <div class="body">
+                <div class="image-preview"><img id="about1" src="@(Model.About.Image1 ?? "/img/blog/banner5.jpg")" alt="Bild der Seite" /></div>
+                <label class="form-label" asp-for="Image1File">Bild austauschen</label>
+                <input class="form-control mb-1" asp-for="Image1File" type="file" accept="image/*" data-preview="#about1" />
+                <span class="field-validation-error" asp-validation-for="Image1File"></span>
+            </div>
+        </div>
+    </div>
+</form>

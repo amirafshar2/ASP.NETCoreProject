@@ -1,15 +1,9 @@
-﻿using BE.concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BE.Concrete;
 
 namespace DAL.Abstract
 {
     public interface ICategoryDAL : IGenericDAL<Category>
     {
-        
-
+        List<Category> GetListWithBlogCount();
     }
 }

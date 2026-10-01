@@ -1,0 +1,94 @@
+@model WriterDashboardDto
+@{
+    ViewData["Title"] = "Übersicht";
+    var firstName = Model.Writer.Name.Split(' ')[0];
+}
+@section Actions { <a class="btn btn-ink btn-sm" asp-controller="Blog" asp-action="Create"><i class="fa-solid fa-plus me-1"></i>Neuer Beitrag</a> }
+
+<div class="welcome">
+    <div>
+        <h2>Willkommen zurück, @firstName</h2>
+        <p>@(Model.UnreadMessages > 0 ? $"Sie haben {Model.UnreadMessages} ungelesene Nachricht{(Model.UnreadMessages == 1 ? "" : "en")}." : "Keine neuen Nachrichten.") Ihre Beiträge wurden insgesamt @Model.TotalViews.ToString("N0")-mal gelesen.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-marker" asp-controller="Blog" asp-action="Create"><i class="fa-solid fa-pen me-1"></i>Beitrag schreiben</a>
+        <a class="btn btn-ghost-light" asp-area="" asp-controller="Blog" asp-action="Author" asp-route-id="@Model.Writer.Id">Meine öffentliche Seite</a>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="stat is-marked"><div class="ico"><i class="fa-regular fa-newspaper"></i></div><div><div class="num">@Model.BlogCount</div><div class="lbl">Beiträge</div><div class="hint">@Model.PublishedCount veröffentlicht, @(Model.BlogCount - Model.PublishedCount) @(Model.BlogCount - Model.PublishedCount == 1 ? "Entwurf" : "Entwürfe")</div></div></div>
+    <div class="stat"><div class="ico"><i class="fa-regular fa-eye"></i></div><div><div class="num">@Model.TotalViews.ToString("N0")</div><div class="lbl">Aufrufe gesamt</div></div></div>
+    <div class="stat"><div class="ico"><i class="fa-regular fa-comments"></i></div><div><div class="num">@Model.CommentCount</div><div class="lbl">Kommentare</div><div class="hint"><a asp-controller="Comment" asp-action="Index">Alle ansehen</a></div></div></div>
+    <div class="stat"><div class="ico"><i class="fa-regular fa-star"></i></div><div><div class="num">@(Model.AverageRating > 0 ? Model.AverageRating.ToString("0.0") : "–")</div><div class="lbl">Ø Bewertung</div><div class="hint">@ViewHelpers.Stars(Model.AverageRating)</div></div></div>
+</div>
+
+<div class="grid-2">
+    <section class="card-x">
+        <div class="head"><div><h2>Aufrufe pro Beitrag</h2><p>Ihre meistgelesenen Beiträge</p></div></div>
+        <div class="body">
+            @if (Model.ViewsPerBlog.Any()) { <div class="chart-box"><canvas id="viewsChart" aria-label="Aufrufe pro Beitrag"></canvas></div> }
+            else { <div class="empty"><i class="fa-solid fa-chart-column"></i><h3>Noch keine Daten</h3><p>Sobald Ihr erster Beitrag gelesen wird, erscheinen hier die Zahlen.</p></div> }
+        </div>
+    </section>
+    <section class="card-x">
+        <div class="head"><div><h2>Hinweise der Redaktion</h2></div><a class="btn btn-ghost btn-sm" asp-controller="Notification" asp-action="Index">Alle</a></div>
+        <div class="body flush">
+            <ul class="mini-list">
+                @foreach (var n in Model.Notifications)
+                {
+                    <li>
+                        <span class="note-ico" style="background:@n.SymbolColor"><i class="@n.TypeSymbol"></i></span>
+                        <div><div class="t">@n.Type</div><div class="s">@ViewHelpers.Short(n.Details, 90)</div></div>
+                        <span class="r s">@ViewHelpers.Relative(n.Date)</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+</div>
+
+<div class="grid-2 even">
+    <section class="card-x">
+        <div class="head"><h2>Zuletzt bearbeitet</h2><a class="btn btn-ghost btn-sm" asp-controller="Blog" asp-action="Index">Alle Beiträge</a></div>
+        <div class="body flush">
+            @if (!Model.LatestBlogs.Any())
+            {
+                <div class="empty"><i class="fa-regular fa-file-lines"></i><h3>Noch keine Beiträge</h3><p>Schreiben Sie Ihren ersten Beitrag – er erscheint sofort auf der Startseite.</p><a class="btn btn-ink" asp-controller="Blog" asp-action="Create">Beitrag schreiben</a></div>
+            }
+            <ul class="mini-list">
+                @foreach (var b in Model.LatestBlogs)
+                {
+                    <li>
+                        <img src="@b.Image" alt="" />
+                        <div><a class="t" asp-controller="Blog" asp-action="Edit" asp-route-id="@b.Id">@b.Title</a><div class="s">@b.Category.Name, @b.CreateDate.ToString("dd.MM.yyyy")</div></div>
+                        <span class="r"><span class="status @(b.Status ? "status-on" : "status-off")">@(b.Status ? "Online" : "Entwurf")</span></span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+    <section class="card-x">
+        <div class="head"><h2>Neue Kommentare</h2><a class="btn btn-ghost btn-sm" asp-controller="Comment" asp-action="Index">Alle</a></div>
+        <div class="body flush">
+            @if (!Model.LatestComments.Any()) { <div class="empty"><i class="fa-regular fa-comments"></i><h3>Noch keine Kommentare</h3></div> }
+            <ul class="mini-list">
+                @foreach (var c in Model.LatestComments)
+                {
+                    <li>
+                        <div><div class="t">@c.UserName zu „@ViewHelpers.Short(c.Blog.Title, 40)“</div><div class="s">@ViewHelpers.Short(c.Content, 90)</div></div>
+                        <span class="r">@ViewHelpers.Stars(c.Score)</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/lib/chartjs/chart.umd.min.js"></script>
+    <script src="~/js/charts.js" asp-append-version="true"></script>
+    <script>
+        CoreCharts.bar("viewsChart", @Json.Serialize(Model.ViewsPerBlog.Select(p => p.Label)), @Json.Serialize(Model.ViewsPerBlog.Select(p => p.Value)), "Aufrufe", true);
+    </script>
+}

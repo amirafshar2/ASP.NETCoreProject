@@ -1,0 +1,31 @@
+@model ComposeMessageViewModel
+@{
+    ViewData["Title"] = "Neue Nachricht";
+}
+<div class="card-x msg-view">
+    <div class="body">
+        <form asp-action="Compose" method="post" novalidate>
+            <div class="mb-3">
+                <label class="form-label" asp-for="ReceiverId">An</label>
+                <select class="form-select" asp-for="ReceiverId" asp-items="Model.Receivers">
+                    <option value="">Empfänger wählen …</option>
+                </select>
+                <span class="field-validation-error" asp-validation-for="ReceiverId"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="Subject">Betreff</label>
+                <input class="form-control" asp-for="Subject" maxlength="120" />
+                <span class="field-validation-error" asp-validation-for="Subject"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="Details">Nachricht</label>
+                <textarea class="form-control" asp-for="Details" rows="10" maxlength="3000"></textarea>
+                <span class="field-validation-error" asp-validation-for="Details"></span>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-ink" type="submit"><i class="fa-solid fa-paper-plane me-1"></i>Senden</button>
+                <a class="btn btn-ghost" asp-action="Index">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</div>

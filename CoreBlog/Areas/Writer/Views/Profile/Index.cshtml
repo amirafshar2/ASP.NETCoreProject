@@ -1,0 +1,42 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Profil";
+}
+<div class="toolbar">
+    <nav class="tabs-x"><a class="is-active" asp-action="Index">Profil</a><a asp-action="Password">Passwort</a></nav>
+</div>
+<form asp-action="Index" method="post" enctype="multipart/form-data" novalidate>
+    <div class="form-layout">
+        <div class="card-x">
+            <div class="head"><div><h2>Öffentliches Profil</h2><p>Diese Angaben stehen unter Ihren Beiträgen und auf Ihrer Autorenseite.</p></div></div>
+            <div class="body">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Name">Name</label>
+                    <input class="form-control" asp-for="Name" maxlength="50" />
+                    <span class="field-validation-error" asp-validation-for="Name"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="About">Über mich</label>
+                    <textarea class="form-control" asp-for="About" rows="5" maxlength="600" data-count="#about-count"></textarea>
+                    <div class="char-count" id="about-count"></div>
+                    <span class="field-validation-error" asp-validation-for="About"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Email">E-Mail-Adresse</label>
+                    <input class="form-control" asp-for="Email" readonly />
+                    <div class="form-text">Die E-Mail-Adresse ist gleichzeitig Ihr Anmeldename.</div>
+                </div>
+                <button class="btn btn-ink" type="submit"><i class="fa-solid fa-check me-1"></i>Profil speichern</button>
+            </div>
+        </div>
+        <div class="card-x">
+            <div class="head"><h2>Profilbild</h2></div>
+            <div class="body text-center">
+                <img id="avatar-preview" class="avatar mb-3" src="@ViewHelpers.Avatar(Model.Image)" width="140" height="140" alt="Profilbild" />
+                <input class="form-control" asp-for="ImageFile" type="file" accept="image/*" data-preview="#avatar-preview" />
+                <div class="form-text">Quadratische Bilder sehen am besten aus.</div>
+                <span class="field-validation-error" asp-validation-for="ImageFile"></span>
+            </div>
+        </div>
+    </div>
+</form>

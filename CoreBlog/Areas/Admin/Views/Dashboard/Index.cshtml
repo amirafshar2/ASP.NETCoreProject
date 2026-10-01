@@ -1,0 +1,87 @@
+@model AdminDashboardDto
+@{
+    ViewData["Title"] = "Übersicht";
+}
+@section Actions { <a class="btn btn-ghost btn-sm" asp-controller="Blog" asp-action="Export"><i class="fa-solid fa-file-csv me-1"></i>Export</a> }
+
+<div class="stats">
+    <div class="stat is-marked"><div class="ico"><i class="fa-regular fa-newspaper"></i></div><div><div class="num">@Model.BlogCount</div><div class="lbl">Beiträge</div><div class="hint">@Model.PublishedCount veröffentlicht</div></div></div>
+    <div class="stat"><div class="ico"><i class="fa-regular fa-eye"></i></div><div><div class="num">@Model.TotalViews.ToString("N0")</div><div class="lbl">Aufrufe gesamt</div><div class="hint">Ø Bewertung @Model.AverageRating.ToString("0.0") von 5</div></div></div>
+    <div class="stat"><div class="ico"><i class="fa-regular fa-comments"></i></div><div><div class="num">@Model.CommentCount</div><div class="lbl">Kommentare</div><div class="hint">@if (Model.PendingComments > 0) { <a asp-controller="Comment" asp-action="Index" asp-route-status="pending">@Model.PendingComments ausgeblendet prüfen</a> } else { <text>Alle freigeschaltet</text> }</div></div></div>
+    <div class="stat"><div class="ico"><i class="fa-solid fa-user-pen"></i></div><div><div class="num">@Model.WriterCount</div><div class="lbl">Autorinnen und Autoren</div><div class="hint">@Model.SubscriberCount Newsletter-Abos</div></div></div>
+</div>
+
+<div class="grid-2">
+    <section class="card-x">
+        <div class="head"><div><h2>Neue Beiträge pro Monat</h2><p>Die letzten sechs Monate</p></div></div>
+        <div class="body"><div class="chart-box"><canvas id="monthChart" aria-label="Neue Beiträge pro Monat"></canvas></div></div>
+    </section>
+    <section class="card-x">
+        <div class="head"><div><h2>Beiträge nach Kategorie</h2><p>Nur veröffentlichte Beiträge</p></div></div>
+        <div class="body"><div class="chart-box"><canvas id="catChart" aria-label="Beiträge nach Kategorie"></canvas></div></div>
+    </section>
+</div>
+
+<div class="grid-2">
+    <section class="card-x">
+        <div class="head"><h2>Meistgelesene Beiträge</h2><a class="btn btn-ghost btn-sm" asp-controller="Blog" asp-action="Index">Alle Beiträge</a></div>
+        <div class="body flush">
+            <ul class="mini-list">
+                @foreach (var b in Model.PopularBlogs)
+                {
+                    <li>
+                        <img src="@b.Image" alt="" />
+                        <div><a class="t" asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@b.Id" target="_blank">@b.Title</a><div class="s">@b.Writer.Name, @b.Category.Name</div></div>
+                        <span class="r"><strong>@b.ViewCount.ToString("N0")</strong><div class="s">Aufrufe</div></span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+    <section class="card-x">
+        <div class="head"><div><h2>Leserzahlen nach Autor</h2><p>Summe aller Aufrufe</p></div></div>
+        <div class="body"><div class="chart-box" style="height:250px"><canvas id="writerChart" aria-label="Aufrufe nach Autor"></canvas></div></div>
+    </section>
+</div>
+
+<div class="grid-2 even">
+    <section class="card-x">
+        <div class="head"><h2>Neueste Kommentare</h2><a class="btn btn-ghost btn-sm" asp-controller="Comment" asp-action="Index">Moderieren</a></div>
+        <div class="body flush">
+            <ul class="mini-list">
+                @foreach (var c in Model.LatestComments)
+                {
+                    <li>
+                        <div><div class="t">@c.UserName <span class="s">zu „@ViewHelpers.Short(c.Blog.Title, 38)“</span></div><div class="s">@ViewHelpers.Short(c.Content, 90)</div></div>
+                        <span class="r"><span class="status @(c.Status ? "status-on" : "status-off")">@(c.Status ? "Sichtbar" : "Ausgeblendet")</span></span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+    <section class="card-x">
+        <div class="head"><h2>Kontaktanfragen</h2><a class="btn btn-ghost btn-sm" asp-controller="Contact" asp-action="Index">Alle</a></div>
+        <div class="body flush">
+            @if (!Model.LatestContacts.Any()) { <div class="empty"><i class="fa-regular fa-envelope"></i><h3>Keine Anfragen</h3></div> }
+            <ul class="mini-list">
+                @foreach (var c in Model.LatestContacts)
+                {
+                    <li>
+                        <div><a class="t" asp-controller="Contact" asp-action="Read" asp-route-id="@c.Id">@c.Subject</a><div class="s">@c.UserName, @ViewHelpers.Relative(c.Date)</div></div>
+                        @if (!c.IsRead) { <span class="r"><span class="status status-warn">Neu</span></span> }
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/lib/chartjs/chart.umd.min.js"></script>
+    <script src="~/js/charts.js" asp-append-version="true"></script>
+    <script>
+        CoreCharts.line("monthChart", @Json.Serialize(Model.BlogsPerMonth.Select(p => p.Label)), @Json.Serialize(Model.BlogsPerMonth.Select(p => p.Value)), "Neue Beiträge");
+        CoreCharts.doughnut("catChart", @Json.Serialize(Model.BlogsPerCategory.Select(p => p.Label)), @Json.Serialize(Model.BlogsPerCategory.Select(p => p.Value)), @Json.Serialize(Model.BlogsPerCategory.Select(p => p.Color)));
+        CoreCharts.bar("writerChart", @Json.Serialize(Model.TopWriters.Select(p => p.Label)), @Json.Serialize(Model.TopWriters.Select(p => p.Value)), "Aufrufe", true);
+    </script>
+}

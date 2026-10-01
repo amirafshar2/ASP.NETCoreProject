@@ -1,0 +1,94 @@
+@model BlogEditViewModel
+@{
+    ViewData["Title"] = Model.IsNew ? "Neuer Beitrag" : "Beitrag bearbeiten";
+    var gallery = new[] { "b1", "banner1", "banner2", "banner3", "banner4", "banner5", "b4", "b5", "m1", "m2", "m3", "m4", "1", "2", "3", "4", "5", "6", "7", "8", "22" }
+        .Select(n => $"/img/blog/{n}.jpg").ToArray();
+}
+@section Actions {
+    @if (!Model.IsNew) { <a class="btn btn-ghost btn-sm" asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@Model.Id" target="_blank"><i class="fa-regular fa-eye me-1"></i>Vorschau</a> }
+}
+
+<form asp-action="@(Model.IsNew ? "Create" : "Edit")" method="post" enctype="multipart/form-data" novalidate>
+    <input type="hidden" asp-for="Id" />
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger"><strong>Bitte prüfen Sie Ihre Eingaben.</strong><div asp-validation-summary="All" class="mt-1"></div></div>
+    }
+    <div class="form-layout">
+        <div class="card-x">
+            <div class="body">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Title">Titel</label>
+                    <input class="form-control title-input" asp-for="Title" maxlength="150" placeholder="Ein klarer, neugierig machender Titel" />
+                    <span class="field-validation-error" asp-validation-for="Title"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Summary">Teaser</label>
+                    <textarea class="form-control" asp-for="Summary" rows="2" maxlength="300" placeholder="Ein bis zwei Sätze, die neugierig auf den Beitrag machen" data-count="#summary-count"></textarea>
+                    <div class="char-count" id="summary-count"></div>
+                    <span class="field-validation-error" asp-validation-for="Summary"></span>
+                </div>
+                <div>
+                    <label class="form-label" asp-for="Content">Inhalt</label>
+                    <textarea class="form-control editor" asp-for="Content" maxlength="20000" placeholder="Schreiben Sie hier Ihren Beitrag …" data-count="#content-count" data-words="1"></textarea>
+                    <div class="char-count" id="content-count"></div>
+                    <span class="field-validation-error" asp-validation-for="Content"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+            <div class="card-x">
+                <div class="head"><h2>Veröffentlichung</h2></div>
+                <div class="body">
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="CategoryId">Kategorie</label>
+                        <select class="form-select" asp-for="CategoryId" asp-items="Model.Categories">
+                            <option value="0">Bitte wählen …</option>
+                        </select>
+                        <span class="field-validation-error" asp-validation-for="CategoryId"></span>
+                    </div>
+                    <div class="switch-row form-switch">
+                        <label class="form-check-label" for="Status"><strong>Sofort veröffentlichen</strong><br /><span class="form-text">Aus = als Entwurf speichern</span></label>
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="Status" />
+                    </div>
+                    <button class="btn btn-ink w-100 mt-2" type="submit"><i class="fa-solid fa-check me-1"></i>@(Model.IsNew ? "Beitrag speichern" : "Änderungen speichern")</button>
+                    <a class="btn btn-ghost w-100 mt-2" asp-action="Index">Abbrechen</a>
+                </div>
+            </div>
+
+            <div class="card-x">
+                <div class="head"><h2>Titelbild</h2></div>
+                <div class="body">
+                    <div class="image-preview"><img id="img-preview" src="@(Model.Image ?? "/img/blog/b1.jpg")" alt="Vorschau des Titelbilds" /></div>
+                    <label class="form-label" asp-for="ImageFile">Eigenes Bild hochladen</label>
+                    <input class="form-control" asp-for="ImageFile" type="file" accept="image/*" data-preview="#img-preview" />
+                    <div class="form-text">JPG, PNG, WEBP oder GIF, höchstens 5 MB.</div>
+                    <span class="field-validation-error" asp-validation-for="ImageFile"></span>
+                    <div class="form-label mt-3 mb-0">Oder aus der Galerie wählen</div>
+                    <div class="gallery">
+                        @foreach (var g in gallery)
+                        {
+                            <label>
+                                <input type="radio" name="Image" value="@g" @(Model.Image == g ? "checked" : null) data-gallery="#img-preview" />
+                                <img src="@g" alt="" loading="lazy" />
+                            </label>
+                        }
+                    </div>
+                    @if (Model.Image != null && !gallery.Contains(Model.Image))
+                    {
+                        <input type="hidden" name="Image" value="@Model.Image" />
+                    }
+                </div>
+            </div>
+
+            <div class="help-box">
+                <strong class="d-block mb-1">Formatierung</strong>
+                Leerzeile = neuer Absatz<br />
+                <code>## Überschrift</code> = Zwischenüberschrift<br />
+                <code>- Punkt</code> = Aufzählung<br />
+                <code>`Code`</code> = Code im Text
+            </div>
+        </div>
+    </div>
+</form>

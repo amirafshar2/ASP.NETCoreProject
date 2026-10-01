@@ -1,0 +1,7 @@
+**/bin
+**/obj
+**/.vs
+**/*.user
+.git
+CoreBlog/wwwroot/uploads/**
+!CoreBlog/wwwroot/uploads/**/.gitkeep

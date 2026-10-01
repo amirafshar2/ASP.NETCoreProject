@@ -1,0 +1,25 @@
+@model Message
+@{
+    ViewData["Title"] = Model.Subject;
+    var incoming = Model.ReceiverId == ((BE.Concrete.Writer)ViewBag.CurrentWriter).Id;
+    var other = incoming ? Model.Sender : Model.Receiver;
+}
+<div class="card-x msg-view">
+    <div class="body">
+        <div class="from">
+            <img class="avatar" src="@ViewHelpers.Avatar(other?.Image)" width="48" height="48" alt="" />
+            <div>
+                <strong>@(incoming ? "Von" : "An") @(other?.Name ?? "Gelöschtes Konto")</strong>
+                <div class="sub text-secondary small">@Model.Date.ToString("dddd, d. MMMM yyyy, HH:mm") Uhr</div>
+            </div>
+            <div class="ms-auto d-flex gap-2">
+                @if (incoming && other != null) { <a class="btn btn-ink btn-sm" asp-action="Compose" asp-route-replyTo="@Model.Id"><i class="fa-solid fa-reply me-1"></i>Antworten</a> }
+                <form asp-action="Delete" asp-route-id="@Model.Id" asp-route-box="@(incoming ? "inbox" : "sent")" method="post" data-confirm="Die Nachricht wird für beide Seiten gelöscht." data-confirm-title="Nachricht löschen?">
+                    <button class="btn btn-danger-ghost btn-sm" type="submit"><i class="fa-regular fa-trash-can me-1"></i>Löschen</button>
+                </form>
+            </div>
+        </div>
+        <div class="text">@Model.Details</div>
+    </div>
+</div>
+<a class="btn btn-ghost mt-3" asp-action="Index" asp-route-box="@(incoming ? "inbox" : "sent")"><i class="fa-solid fa-arrow-left me-1"></i>Zurück zum Postfach</a>

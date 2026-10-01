@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BE.concrete
+namespace BE.Concrete
 {
-   public class About
+    /// <summary>Inhalt der Seite "Über uns".</summary>
+    public class About
     {
-        [Key]
-        public int id { get; set; }
-       
-        public string Name { get; set; }
-       
+        public int Id { get; set; }
+        public string Title { get; set; }
         public string Details1 { get; set; }
-        public string Detaila2 { get; set; }
-        public string İmage1 { get; set; }
-        public string İmage2 { get; set; }
-        public string MapLoc { get; set; }
-        public bool Status { get; set; }
-
+        public string Details2 { get; set; }
+        public string Image1 { get; set; }
+        public string Image2 { get; set; }
+        public string MapLocation { get; set; }
+        public bool Status { get; set; } = true;
     }
 }

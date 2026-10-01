@@ -1,0 +1,18 @@
+@{
+    int code = ViewBag.Code ?? 500;
+    ViewData["Title"] = code == 404 ? "Seite nicht gefunden" : "Fehler";
+    var (headline, text) = code switch
+    {
+        404 => ("Diese Seite gibt es nicht", "Vielleicht wurde der Beitrag verschoben oder die Adresse ist falsch geschrieben. Über die Suche finden Sie bestimmt, was Sie suchen."),
+        403 => ("Kein Zugriff", "Für diese Seite fehlt Ihrem Konto die Berechtigung."),
+        _ => ("Da ist etwas schiefgelaufen", "Der Fehler wurde protokolliert. Bitte versuchen Sie es in einem Moment erneut.")
+    };
+}
+<section class="error-page">
+    <div class="wrap">
+        <div class="code"><span class="marker">@code</span></div>
+        <h1>@headline</h1>
+        <p>@text</p>
+        <a class="btn btn-ink" asp-area="" asp-controller="Home" asp-action="Index">Zur Startseite</a>
+    </div>
+</section>

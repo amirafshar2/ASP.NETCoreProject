@@ -1,18 +1,14 @@
-﻿using BE.concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BE.Concrete;
 
 namespace BLL.Abstract
 {
-    public  interface IGenericService<T>
+    public interface IGenericService<T>
     {
-        void İnsert(T t);
-        void Delete(T t);
+        void Add(T t);
         void Update(T t);
-        List<T> GetAll();
+        void Delete(T t);
         T GetById(int id);
+        List<T> GetList();
+        int Count();
     }
 }

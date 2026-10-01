@@ -1,28 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BE.concrete
+namespace BE.Concrete
 {
     public class Blog
     {
-        [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; }
+        /// <summary>Kurzer Teaser für Listen und Vorschau.</summary>
+        public string Summary { get; set; }
+        /// <summary>Inhalt: Absätze durch Leerzeilen getrennt, "## " für Zwischenüberschriften.</summary>
         public string Content { get; set; }
-        public string TompNailİmage { get; set; }
-        public string İmage {  get; set; }
-        public DateTime CreateDate { get; set; }
-        public bool Status { get; set; }
-        public int Categoryid { get; set; }
+        public string Image { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public bool Status { get; set; } = true;
+        public bool IsFeatured { get; set; }
+        public int ViewCount { get; set; }
+
+        public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public List<Comment> Comments { get; set; }
-        
-        public int Writerid { get; set; }
+
+        public int WriterId { get; set; }
         public Writer Writer { get; set; }
 
-    }   
+        public List<Comment> Comments { get; set; } = new();
+        public BlogRating Rating { get; set; }
+
+        /// <summary>Geschätzte Lesezeit in Minuten (ca. 200 Wörter pro Minute).</summary>
+        public int ReadingMinutes =>
+            Math.Max(1, (int)Math.Ceiling((Content ?? "").Split((char[])null, StringSplitOptions.RemoveEmptyEntries).Length / 200.0));
+    }
 }

@@ -1,0 +1,12 @@
+<section class="newsletter-box side-block" aria-labelledby="nl-title">
+    <h2 id="nl-title">Einmal pro Woche, kein Spam</h2>
+    <p>Die besten neuen Beiträge jeden Freitag in Ihrem Postfach.</p>
+    <form asp-controller="Newsletter" asp-action="Subscribe" method="post" data-newsletter>
+        <label class="visually-hidden" for="nl-mail">E-Mail-Adresse</label>
+        <div class="d-flex gap-2">
+            <input id="nl-mail" class="form-control" type="email" name="mail" placeholder="name@beispiel.de" required />
+            <button class="btn btn-marker" type="submit">Eintragen</button>
+        </div>
+        <div class="result" role="status"></div>
+    </form>
+</section>

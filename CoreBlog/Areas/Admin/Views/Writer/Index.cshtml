@@ -1,0 +1,40 @@
+@model List<WriterAdminViewModel>
+@{
+    ViewData["Title"] = "Autoren & Rollen";
+}
+<div class="card-x">
+    <div class="head"><div><h2>@Model.Count Konten</h2><p>Gesperrte Autoren können sich nicht mehr im Autorenbereich anmelden; ihre Beiträge werden öffentlich ausgeblendet.</p></div></div>
+    <div class="table-wrap">
+        <table class="table-x">
+            <thead><tr><th>Name</th><th>Rolle</th><th>Beiträge</th><th>Status</th><th>Dabei seit</th><th><span class="visually-hidden">Aktionen</span></th></tr></thead>
+            <tbody>
+                @foreach (var w in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img class="avatar" src="@ViewHelpers.Avatar(w.Image)" width="38" height="38" alt="" />
+                                <div><strong>@w.Name</strong>@if (w.IsDemoAccount) { <span class="status status-warn ms-2">Demo</span> }<div class="sub">@w.Email</div></div>
+                            </div>
+                        </td>
+                        <td>@if (w.IsAdmin) { <span class="chip" style="--c:var(--ink)"><span class="dot"></span>Admin</span> } else { <span class="chip"><span class="dot"></span>Autor</span> }</td>
+                        <td>@w.BlogCount</td>
+                        <td><span class="status @(w.Status ? "status-on" : "status-danger")">@(w.Status ? "Aktiv" : "Gesperrt")</span></td>
+                        <td class="sub">@w.CreatedAt.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            <div class="row-actions">
+                                <a class="btn btn-ghost btn-icon" asp-area="" asp-controller="Blog" asp-action="Author" asp-route-id="@w.Id" target="_blank" title="Öffentliche Seite" aria-label="Öffentliche Seite"><i class="fa-regular fa-eye"></i></a>
+                                <a class="btn btn-ghost btn-icon" asp-action="Edit" asp-route-id="@w.Id" title="Bearbeiten" aria-label="Bearbeiten"><i class="fa-solid fa-pen"></i></a>
+                                @if (!w.IsDemoAccount)
+                                {
+                                    <form asp-action="ToggleStatus" asp-route-id="@w.Id" method="post"><button class="btn btn-ghost btn-icon" type="submit" title="@(w.Status ? "Sperren" : "Entsperren")" aria-label="@(w.Status ? "Sperren" : "Entsperren")"><i class="fa-solid @(w.Status ? "fa-user-lock" : "fa-user-check")"></i></button></form>
+                                    <form asp-action="Delete" asp-route-id="@w.Id" method="post" data-confirm="@w.Name, das Benutzerkonto und alle @w.BlogCount Beiträge werden endgültig gelöscht." data-confirm-title="Konto löschen?"><button class="btn btn-danger-ghost btn-icon" type="submit" title="Löschen" aria-label="Löschen"><i class="fa-regular fa-trash-can"></i></button></form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
