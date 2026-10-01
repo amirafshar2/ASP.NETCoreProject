@@ -121,15 +121,15 @@
                 <div>
                     <h2>Rechtliches</h2>
                     <ul>
-                        <li><a href="@demo.ImpressumUrl" target="_blank" rel="noopener">Impressum</a></li>
-                        <li><a href="@demo.DatenschutzUrl" target="_blank" rel="noopener">Datenschutz</a></li>
+                        <li><a asp-controller="Legal" asp-action="Impressum">Impressum</a></li>
+                        <li><a asp-controller="Legal" asp-action="Datenschutz">Datenschutz</a></li>
                         <li><a href="@demo.GitHubUrl" target="_blank" rel="noopener"><i class="fa-brands fa-github me-1"></i>Quellcode</a></li>
                     </ul>
                 </div>
             </div>
             <div class="bottom">
                 <span>© @DateTime.Now.Year CoreBlog – ein Portfolio-Projekt von <a href="@demo.PortfolioUrl" target="_blank" rel="noopener">Amir Reza Afshar</a></span>
-                <span>Alle Inhalte sind Beispieldaten.</span>
+                <span>Alle Inhalte sind Beispieldaten. <a asp-controller="Legal" asp-action="Impressum">Impressum</a> | <a asp-controller="Legal" asp-action="Datenschutz">Datenschutz</a></span>
             </div>
         </div>
     </footer>
