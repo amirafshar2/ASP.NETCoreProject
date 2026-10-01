@@ -12,8 +12,8 @@ namespace CoreBlog.Infrastructure
         public string WriterEmail { get; set; } = "autorin@coreblog.demo";
         public string Password { get; set; } = "Demo123!";
         public string PortfolioUrl { get; set; } = "https://amirrezaafshar.de";
-        public string ImpressumUrl { get; set; } = "https://amirrezaafshar.de/Impressum";
-        public string DatenschutzUrl { get; set; } = "https://amirrezaafshar.de/Datenschutz";
+        public string ImpressumUrl { get; set; } = "https://amirrezaafshar.de/impressum";
+        public string DatenschutzUrl { get; set; } = "https://amirrezaafshar.de/datenschutz";
         public string GitHubUrl { get; set; } = "https://github.com/amirafshar2/ASP.NETCoreProject";
 
         public bool IsDemoAccount(string email) =>

@@ -33,13 +33,8 @@ namespace CoreBlog.Controllers
             }
             else
             {
-                // Aufrufe nur einmal pro Sitzung zählen (Cookie)
-                var cookie = $"cb_v_{id}";
-                if (!Request.Cookies.ContainsKey(cookie))
-                {
-                    _blogs.RegisterView(id);
-                    Response.Cookies.Append(cookie, "1", new CookieOptions { HttpOnly = true, IsEssential = true, SameSite = SameSiteMode.Lax });
-                }
+                // Aufruf zählen – bewusst ohne Cookie oder IP-Speicherung (Datenschutz)
+                _blogs.RegisterView(id);
             }
 
             var model = new BlogDetailViewModel
