@@ -1,0 +1,21 @@
+@model PagerModel
+@if (Model.TotalPages > 1)
+{
+    string Url(int p)
+    {
+        var values = new Dictionary<string, string>(Model.RouteValues) { ["page"] = p.ToString() };
+        var q = string.Join("&", values.Where(v => !string.IsNullOrEmpty(v.Value)).Select(v => $"{v.Key}={Uri.EscapeDataString(v.Value)}"));
+        return $"{Context.Request.Path}?{q}";
+    }
+    <nav class="pager" aria-label="Seiten">
+        @if (Model.Page > 1) { <a href="@Url(Model.Page - 1)" aria-label="Vorherige Seite"><i class="fa-solid fa-arrow-left"></i></a> }
+        else { <span class="is-disabled"><i class="fa-solid fa-arrow-left"></i></span> }
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            if (i == Model.Page) { <span class="is-current" aria-current="page">@i</span> }
+            else { <a href="@Url(i)">@i</a> }
+        }
+        @if (Model.Page < Model.TotalPages) { <a href="@Url(Model.Page + 1)" aria-label="Nächste Seite"><i class="fa-solid fa-arrow-right"></i></a> }
+        else { <span class="is-disabled"><i class="fa-solid fa-arrow-right"></i></span> }
+    </nav>
+}

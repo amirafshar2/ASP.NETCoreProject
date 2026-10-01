@@ -1,0 +1,12 @@
+<Project>
+  <!-- Zentrale Versionen für alle Projekte -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <EfCoreVersion>8.0.11</EfCoreVersion>
+    <IdentityVersion>8.0.11</IdentityVersion>
+    <FluentValidationVersion>11.9.1</FluentValidationVersion>
+  </PropertyGroup>
+</Project>

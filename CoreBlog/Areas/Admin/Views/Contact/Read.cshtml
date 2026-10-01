@@ -1,0 +1,21 @@
+@model Contact
+@{
+    ViewData["Title"] = Model.Subject;
+}
+<div class="card-x msg-view">
+    <div class="body">
+        <div class="from">
+            <div class="comment-initial">@ViewHelpers.Initial(Model.UserName)</div>
+            <div>
+                <strong>@Model.UserName</strong>
+                <div class="small text-secondary"><a href="mailto:@Model.Mail">@Model.Mail</a>, @Model.Date.ToString("d. MMMM yyyy, HH:mm") Uhr</div>
+            </div>
+            <div class="ms-auto d-flex gap-2">
+                <a class="btn btn-ink btn-sm" href="mailto:@Model.Mail?subject=@Uri.EscapeDataString("Re: " + Model.Subject)"><i class="fa-solid fa-reply me-1"></i>Per E-Mail antworten</a>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Die Nachricht wird gelöscht." data-confirm-title="Nachricht löschen?"><button class="btn btn-danger-ghost btn-sm" type="submit"><i class="fa-regular fa-trash-can me-1"></i>Löschen</button></form>
+            </div>
+        </div>
+        <div class="text">@Model.Message</div>
+    </div>
+</div>
+<a class="btn btn-ghost mt-3" asp-action="Index"><i class="fa-solid fa-arrow-left me-1"></i>Zurück zur Übersicht</a>

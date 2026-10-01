@@ -1,28 +1,16 @@
-﻿using BE.concrete;
+using BE.Concrete;
 using FluentValidation;
-using FluentValidation.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.ValidationRules
 {
-	public class WriterValidator : AbstractValidator<Writer>
-	{
-		public WriterValidator()
-		{
-			RuleFor(i => i.Name).NotEmpty().WithMessage("Yazar adı boş geçilemez");
-			RuleFor(i => i.Name).MinimumLength(2).WithMessage("Lütfen en az 2 karakter girişi yapın");
-            RuleFor(i => i.Name).MaximumLength(50).WithMessage("Lütfen en fazla 50 karakterlik veri girişi yapın");
-			RuleFor(i => i.Mail).NotEmpty().WithMessage("Mail adı boş geçilemez");
-			RuleFor(i => i.Password).NotEmpty().WithMessage("Şifre alanı boş geçilemez");
-            RuleFor(i => i.Password).Must(password => password != null && password.Any(char.IsDigit) && password.Any(char.IsLower) && password.Any(char.IsUpper))
-			.WithMessage("Şifre en az bir küçük harf, bir büyük harf ve bir rakam içermelidir");
-
-		}
-
-   
+    public class WriterValidator : AbstractValidator<Writer>
+    {
+        public WriterValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Bitte geben Sie einen Namen ein.")
+                .MinimumLength(2).WithMessage("Der Name muss mindestens 2 Zeichen lang sein.")
+                .MaximumLength(50).WithMessage("Der Name darf höchstens 50 Zeichen lang sein.");
+            RuleFor(x => x.About).MaximumLength(600).WithMessage("Die Beschreibung darf höchstens 600 Zeichen lang sein.");
+        }
     }
 }

@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
-namespace BE.concrete
+namespace BE.Concrete
 {
+    /// <summary>Benutzerkonto (ASP.NET Core Identity) – jeder Benutzer hat ein Autorenprofil.</summary>
     public class AppUser : IdentityUser<int>
     {
-        public string Name_SureName { get; set; }
-        public string ?İmage { get; set; }
+        public string FullName { get; set; }
+        public string ImageUrl { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public Writer Writer { get; set; }
     }
 }

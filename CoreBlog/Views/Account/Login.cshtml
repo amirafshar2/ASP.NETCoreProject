@@ -1,0 +1,51 @@
+@model LoginViewModel
+@inject Microsoft.Extensions.Options.IOptions<DemoOptions> DemoConfig
+@{
+    ViewData["Title"] = "Anmelden";
+    var demo = DemoConfig.Value;
+}
+<div class="auth">
+    <div class="auth-art">
+        <div>
+            <blockquote>„Code wird viel öfter gelesen als geschrieben.“</blockquote>
+            <cite>Aus „Clean Code im Alltag“</cite>
+        </div>
+    </div>
+    <div class="auth-form">
+        <div class="box">
+            <h1>Willkommen zurück</h1>
+            <p class="sub">Melden Sie sich an, um Beiträge zu schreiben und zu verwalten.</p>
+            @if (demo.Enabled)
+            {
+                <div class="demo-hint">
+                    <i class="fa-solid fa-key mt-1"></i>
+                    <div>
+                        Demo ohne Registrierung: <a asp-controller="Demo" asp-action="Admin">als Admin</a> oder <a asp-controller="Demo" asp-action="Writer">als Autorin</a> anmelden.
+                        <div class="mt-1">Oder manuell: <code>@demo.AdminEmail</code> / <code>@demo.Password</code></div>
+                    </div>
+                </div>
+            }
+            <form asp-action="Login" method="post" novalidate>
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Email"></label>
+                    <input class="form-control" asp-for="Email" autocomplete="username" autofocus />
+                    <span class="field-validation-error" asp-validation-for="Email"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Password"></label>
+                    <input class="form-control" asp-for="Password" autocomplete="current-password" />
+                    <span class="field-validation-error" asp-validation-for="Password"></span>
+                </div>
+                <div class="form-check mb-4">
+                    <input class="form-check-input" asp-for="RememberMe" />
+                    <label class="form-check-label" asp-for="RememberMe"></label>
+                </div>
+                <button class="btn btn-ink btn-lg w-100" type="submit">Anmelden</button>
+            </form>
+            <p class="mt-4 text-center text-secondary">Noch kein Konto? <a asp-action="Register">Jetzt als Autor registrieren</a></p>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

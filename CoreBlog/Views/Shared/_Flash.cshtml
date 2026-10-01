@@ -1,0 +1,14 @@
+@{
+    var success = TempData["success"] as string;
+    var error = TempData["error"] as string;
+}
+<div class="flash-stack" aria-live="polite">
+    @if (!string.IsNullOrEmpty(success))
+    {
+        <div class="flash is-success" role="status"><i class="fa-solid fa-circle-check"></i><span>@success</span><button type="button" aria-label="Schließen" data-flash-close><i class="fa-solid fa-xmark"></i></button></div>
+    }
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="flash is-error" role="alert"><i class="fa-solid fa-circle-exclamation"></i><span>@error</span><button type="button" aria-label="Schließen" data-flash-close><i class="fa-solid fa-xmark"></i></button></div>
+    }
+</div>

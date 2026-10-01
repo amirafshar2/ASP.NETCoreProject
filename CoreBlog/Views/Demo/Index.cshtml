@@ -1,0 +1,54 @@
+@model DemoOptions
+@{
+    ViewData["Title"] = "Demo ohne Registrierung";
+}
+<section class="demo-page">
+    <div class="wrap">
+        <h1>Probieren Sie CoreBlog aus, ganz ohne Registrierung</h1>
+        <p>Wählen Sie eine Rolle und Sie sind mit einem Klick angemeldet. Alle Funktionen sind freigeschaltet: Sie können Beiträge anlegen, Kommentare moderieren und Nachrichten senden. Die Demo-Daten werden alle @Model.ResetIntervalHours Stunden automatisch zurückgesetzt.</p>
+
+        <div class="demo-choices">
+            <a class="demo-choice is-primary" asp-action="Admin">
+                <span class="icon"><i class="fa-solid fa-gauge-high"></i></span>
+                <h2>Admin-Panel</h2>
+                <p>Angemeldet als Daniel Krüger, Chefredakteur.</p>
+                <ul>
+                    <li>Dashboard mit Kennzahlen und Diagrammen</li>
+                    <li>Beiträge, Kategorien und Kommentare verwalten</li>
+                    <li>Autoren, Rollen, Newsletter und Kontaktanfragen</li>
+                </ul>
+                <span class="go">Admin-Panel öffnen</span>
+            </a>
+            <a class="demo-choice" asp-action="Writer">
+                <span class="icon"><i class="fa-solid fa-pen-nib"></i></span>
+                <h2>Autorenbereich</h2>
+                <p>Angemeldet als Lena Hoffmann, Autorin.</p>
+                <ul>
+                    <li>Eigene Beiträge schreiben, mit Bild-Upload</li>
+                    <li>Entwürfe und Veröffentlichungen verwalten</li>
+                    <li>Nachrichten, Hinweise und Profil</li>
+                </ul>
+                <span class="go">Autorenbereich öffnen</span>
+            </a>
+            <a class="demo-choice" asp-controller="Home" asp-action="Index">
+                <span class="icon"><i class="fa-solid fa-newspaper"></i></span>
+                <h2>Öffentliche Website</h2>
+                <p>So sehen Leserinnen und Leser den Blog.</p>
+                <ul>
+                    <li>Suche und Filter nach Kategorien</li>
+                    <li>Kommentare mit Sternebewertung</li>
+                    <li>Autorenseiten und Newsletter</li>
+                </ul>
+                <span class="go">Website ansehen</span>
+            </a>
+        </div>
+
+        <div class="tech" aria-label="Verwendete Technologien">
+            @foreach (var t in new[] { "ASP.NET Core 8 MVC", "Entity Framework Core", "SQLite", "ASP.NET Core Identity", "FluentValidation", "N-Tier-Architektur", "Repository-Pattern", "Dependency Injection", "Bootstrap 5", "Chart.js" })
+            {
+                <span class="chip">@t</span>
+            }
+        </div>
+        <p class="mt-4 text-secondary">Lieber manuell anmelden? <a asp-controller="Account" asp-action="Login">Zur Anmeldung</a> mit <code>@Model.AdminEmail</code> oder <code>@Model.WriterEmail</code> und dem Passwort <code>@Model.Password</code>. Den Quellcode finden Sie auf <a href="@Model.GitHubUrl" target="_blank" rel="noopener">GitHub</a>.</p>
+    </div>
+</section>

@@ -1,0 +1,71 @@
+@model List<Blog>
+@{
+    ViewData["Title"] = "Meine Beiträge";
+    string status = ViewBag.Status;
+    string Tab(string s) => status == s ? "is-active" : null;
+}
+@section Actions { <a class="btn btn-ink btn-sm" asp-action="Create"><i class="fa-solid fa-plus me-1"></i>Neuer Beitrag</a> }
+
+<div class="toolbar">
+    <nav class="tabs-x" aria-label="Filter">
+        <a class="@Tab("all")" asp-route-status="all">Alle <span class="n">@ViewBag.AllCount</span></a>
+        <a class="@Tab("published")" asp-route-status="published">Veröffentlicht <span class="n">@ViewBag.PublishedCount</span></a>
+        <a class="@Tab("draft")" asp-route-status="draft">Entwürfe <span class="n">@ViewBag.DraftCount</span></a>
+    </nav>
+    <span class="spacer"></span>
+    <form class="search" method="get">
+        <input type="hidden" name="status" value="@status" />
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <label class="visually-hidden" for="bq">Titel suchen</label>
+        <input id="bq" class="form-control" name="q" value="@ViewBag.Query" placeholder="Titel suchen" />
+    </form>
+</div>
+
+<div class="card-x">
+    @if (!Model.Any())
+    {
+        <div class="empty">
+            <i class="fa-regular fa-file-lines"></i>
+            <h3>Hier ist noch nichts</h3>
+            <p>Schreiben Sie einen neuen Beitrag oder ändern Sie den Filter.</p>
+            <a class="btn btn-ink" asp-action="Create">Beitrag schreiben</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table-x">
+                <thead><tr><th>Beitrag</th><th>Status</th><th>Aufrufe</th><th>Bewertung</th><th>Datum</th><th><span class="visually-hidden">Aktionen</span></th></tr></thead>
+                <tbody>
+                    @foreach (var b in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="title-cell">
+                                    <img src="@b.Image" alt="" />
+                                    <div><a asp-action="Edit" asp-route-id="@b.Id">@b.Title</a><div class="sub"><span class="chip" style="--c:@b.Category.Color"><span class="dot"></span>@b.Category.Name</span></div></div>
+                                </div>
+                            </td>
+                            <td><span class="status @(b.Status ? "status-on" : "status-off")">@(b.Status ? "Veröffentlicht" : "Entwurf")</span></td>
+                            <td>@b.ViewCount.ToString("N0")</td>
+                            <td>@if (b.Rating?.RatingCount > 0) { @ViewHelpers.Stars(b.Rating.Average) <span class="sub">(@b.Rating.RatingCount)</span> } else { <span class="sub">–</span> }</td>
+                            <td class="sub">@b.CreateDate.ToString("dd.MM.yyyy")</td>
+                            <td>
+                                <div class="row-actions">
+                                    <a class="btn btn-ghost btn-icon" asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@b.Id" title="Ansehen" aria-label="Ansehen" target="_blank"><i class="fa-regular fa-eye"></i></a>
+                                    <a class="btn btn-ghost btn-icon" asp-action="Edit" asp-route-id="@b.Id" title="Bearbeiten" aria-label="Bearbeiten"><i class="fa-solid fa-pen"></i></a>
+                                    <form asp-action="ToggleStatus" asp-route-id="@b.Id" method="post">
+                                        <button class="btn btn-ghost btn-icon" type="submit" title="@(b.Status ? "Zurückziehen" : "Veröffentlichen")" aria-label="@(b.Status ? "Zurückziehen" : "Veröffentlichen")"><i class="fa-solid @(b.Status ? "fa-eye-slash" : "fa-upload")"></i></button>
+                                    </form>
+                                    <form asp-action="Delete" asp-route-id="@b.Id" method="post" data-confirm="„@b.Title“ und alle Kommentare werden endgültig gelöscht." data-confirm-title="Beitrag löschen?">
+                                        <button class="btn btn-danger-ghost btn-icon" type="submit" title="Löschen" aria-label="Löschen"><i class="fa-regular fa-trash-can"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

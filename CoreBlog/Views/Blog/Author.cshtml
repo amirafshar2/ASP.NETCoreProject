@@ -1,0 +1,35 @@
+@model AuthorViewModel
+@{
+    ViewData["Title"] = Model.Writer.Name;
+}
+<div class="wrap">
+    <section class="author-hero">
+        <img class="avatar" src="@ViewHelpers.Avatar(Model.Writer.Image)" width="132" height="132" alt="" />
+        <div>
+            <h1>@Model.Writer.Name</h1>
+            <p>@(string.IsNullOrWhiteSpace(Model.Writer.About) ? "Schreibt für CoreBlog." : Model.Writer.About)</p>
+            <div class="author-stats">
+                <div><strong>@Model.Blogs.Count</strong><span>Beiträge</span></div>
+                <div><strong>@Model.TotalViews.ToString("N0")</strong><span>Aufrufe</span></div>
+                <div><strong>@(Model.AverageRating > 0 ? Model.AverageRating.ToString("0.0") : "–")</strong><span>Ø Bewertung</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="section-head"><h2>Beiträge von @Model.Writer.Name.Split(' ')[0]</h2></div>
+        @if (!Model.Blogs.Any())
+        {
+            <div class="empty"><i class="fa-regular fa-file-lines"></i><h3>Noch keine Beiträge</h3></div>
+        }
+        else
+        {
+            <div class="post-grid is-wide">
+                @foreach (var b in Model.Blogs)
+                {
+                    <partial name="_PostCard" model="b" />
+                }
+            </div>
+        }
+    </section>
+</div>

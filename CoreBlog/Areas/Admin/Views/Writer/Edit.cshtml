@@ -1,0 +1,45 @@
+@model WriterAdminViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+<div class="card-x narrow">
+    <div class="head">
+        <div class="d-flex align-items-center gap-3">
+            <img class="avatar" src="@ViewHelpers.Avatar(Model.Image)" width="52" height="52" alt="" />
+            <div><h2>@Model.Name</h2><p>@Model.Email</p></div>
+        </div>
+    </div>
+    <div class="body">
+        <form asp-action="Edit" method="post" novalidate>
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3">
+                <label class="form-label" asp-for="Name">Name</label>
+                <input class="form-control" asp-for="Name" maxlength="50" />
+                <span class="field-validation-error" asp-validation-for="Name"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="About">Beschreibung</label>
+                <textarea class="form-control" asp-for="About" rows="4" maxlength="600"></textarea>
+                <span class="field-validation-error" asp-validation-for="About"></span>
+            </div>
+            <div class="switch-row form-switch border-top">
+                <label class="form-check-label" for="Status"><strong>Konto aktiv</strong><br /><span class="form-text">Gesperrte Konten haben keinen Zugriff auf den Autorenbereich.</span></label>
+                <input class="form-check-input" type="checkbox" role="switch" asp-for="Status" disabled="@Model.IsDemoAccount" />
+            </div>
+            <div class="switch-row form-switch border-top">
+                <label class="form-check-label" for="IsAdmin"><strong>Administrator</strong><br /><span class="form-text">Admins haben Zugriff auf das Admin-Panel.</span></label>
+                <input class="form-check-input" type="checkbox" role="switch" asp-for="IsAdmin" disabled="@Model.IsDemoAccount" />
+            </div>
+            @if (Model.IsDemoAccount)
+            {
+                <input type="hidden" name="Status" value="true" />
+                <input type="hidden" name="IsAdmin" value="@Model.IsAdmin.ToString().ToLower()" />
+                <p class="form-text">Status und Rolle der Demo-Konten sind geschützt, damit die Demo für alle Besucher funktioniert.</p>
+            }
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-ink" type="submit">Änderungen speichern</button>
+                <a class="btn btn-ghost" asp-action="Index">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</div>

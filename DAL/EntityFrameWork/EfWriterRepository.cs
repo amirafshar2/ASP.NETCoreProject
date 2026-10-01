@@ -1,38 +1,24 @@
-﻿using BE.concrete;
+using BE.Concrete;
 using DAL.Abstract;
-using DAL.Context;
-using DAL.Repostory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DAL.Concrete;
+using DAL.Repository;
+using Microsoft.EntityFrameworkCore;
 
-namespace DAL.EntityFrameWork
+namespace DAL.EntityFramework
 {
     public class EfWriterRepository : GenericRepository<Writer>, IWriterDAL
     {
-        DB db = new DB();
+        public EfWriterRepository(Context context) : base(context) { }
 
-        public Writer GetWriterBayEmail(string e)
-        {
-            return db.writers.Where(i => i.Mail == e).FirstOrDefault();
-        }
+        public Writer GetByMail(string mail) => _context.Writers.FirstOrDefault(w => w.Mail == mail);
 
-        public void Updatew(int id, Writer w)
-        {
-            var q =db.writers.Where(i=>i.id == id).SingleOrDefault();
-            if (q !=null)
-            {
-                q.Name= w.Name;
-                q.Status= w.Status;
-                q.About= w.About;
-                q.İmage = w.İmage;
-                q.Mail= w.Mail;
-                q.Password=w.Password;
-                db.SaveChanges();
-            }
-        }
+        public Writer GetByAppUserId(int appUserId) => _context.Writers.FirstOrDefault(w => w.AppUserId == appUserId);
 
+        public List<Writer> GetListWithBlogs() => _context.Writers
+            .AsNoTracking()
+            .Include(w => w.Blogs)
+            .Include(w => w.AppUser)
+            .OrderBy(w => w.Name)
+            .ToList();
     }
 }

@@ -1,0 +1,145 @@
+@inject Microsoft.Extensions.Options.IOptions<DemoOptions> DemoConfig
+@inject BLL.Abstract.ICategoryService CategoryService
+@{
+    var demo = DemoConfig.Value;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var footerCategories = CategoryService.GetActiveList();
+    string Active(string c) => string.Equals(controller, c, StringComparison.OrdinalIgnoreCase) ? "is-active" : null;
+    var title = ViewData["Title"] as string;
+}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@(string.IsNullOrEmpty(title) ? "CoreBlog – Magazin für Menschen, die Software bauen" : title + " – CoreBlog")</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "CoreBlog ist ein Magazin über Softwareentwicklung, Design, Produktivität und den Einstieg in die IT.")" />
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Head", required: false)
+</head>
+<body>
+    <a class="visually-hidden-focusable" href="#inhalt">Zum Inhalt springen</a>
+
+    @if (demo.Enabled)
+    {
+        <div class="demo-bar">
+            <div class="wrap">
+                <span>Portfolio-Projekt von <a href="@demo.PortfolioUrl" target="_blank" rel="noopener">Amir Reza Afshar</a>. Ohne Registrierung testen:</span>
+                <a class="is-cta" asp-controller="Demo" asp-action="Admin"><i class="fa-solid fa-gauge-high me-1"></i>Admin-Panel</a>
+                <a class="is-cta" asp-controller="Demo" asp-action="Writer"><i class="fa-solid fa-pen-nib me-1"></i>Autorenbereich</a>
+            </div>
+        </div>
+    }
+
+    <header class="site-header">
+        <div class="wrap">
+            <a class="brand" asp-controller="Home" asp-action="Index" aria-label="CoreBlog Startseite">
+                <span class="brand-mark"><i class="fa-solid fa-pen-nib"></i></span>CoreBlog
+            </a>
+            <button class="btn btn-ghost btn-icon nav-toggle" type="button" aria-label="Menü öffnen" aria-expanded="false" data-nav-toggle>
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="site-menu" id="site-menu">
+                <ul class="site-nav">
+                    <li><a class="@Active("Home")" asp-controller="Home" asp-action="Index">Beiträge</a></li>
+                    <li><a class="@Active("About")" asp-controller="About" asp-action="Index">Über uns</a></li>
+                    <li><a class="@Active("Contact")" asp-controller="Contact" asp-action="Index">Kontakt</a></li>
+                    <li><a class="@Active("Demo")" asp-controller="Demo" asp-action="Index">Demo</a></li>
+                </ul>
+                <form class="header-search" asp-controller="Home" asp-action="Index" method="get" role="search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <label class="visually-hidden" for="q">Beiträge durchsuchen</label>
+                    <input id="q" name="q" type="search" placeholder="Beiträge durchsuchen" value="@Context.Request.Query["q"]" />
+                </form>
+                <div class="header-actions">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="dropdown">
+                            <a class="user-pill dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-circle-user fa-lg ms-1"></i>@User.Identity.Name?.Split('@')[0]
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                @if (User.IsInRole(DataSeeder.AdminRole))
+                                {
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-gauge-high"></i>Admin-Panel</a></li>
+                                }
+                                <li><a class="dropdown-item" asp-area="Writer" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-pen-nib"></i>Autorenbereich</a></li>
+                                <li><a class="dropdown-item" asp-area="Writer" asp-controller="Blog" asp-action="Create"><i class="fa-solid fa-plus"></i>Neuer Beitrag</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                        <button class="dropdown-item" type="submit"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="btn btn-ghost btn-sm" asp-controller="Account" asp-action="Login">Anmelden</a>
+                        <a class="btn btn-ink btn-sm" asp-controller="Account" asp-action="Register">Autor werden</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="inhalt">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="grid">
+                <div>
+                    <a class="brand" asp-controller="Home" asp-action="Index"><span class="brand-mark"><i class="fa-solid fa-pen-nib"></i></span>CoreBlog</a>
+                    <p>Ein Magazin für Menschen, die Software bauen: über sauberen Code, gute Gestaltung und den Einstieg in die IT.</p>
+                    <p class="mb-0">Gebaut mit ASP.NET Core 8, Entity Framework Core und SQLite.</p>
+                </div>
+                <div>
+                    <h2>Kategorien</h2>
+                    <ul>
+                        @foreach (var c in footerCategories)
+                        {
+                            <li><a asp-controller="Home" asp-action="Index" asp-route-category="@c.Id">@c.Name</a></li>
+                        }
+                    </ul>
+                </div>
+                <div>
+                    <h2>Seiten</h2>
+                    <ul>
+                        <li><a asp-controller="About" asp-action="Index">Über uns</a></li>
+                        <li><a asp-controller="Contact" asp-action="Index">Kontakt</a></li>
+                        <li><a asp-controller="Account" asp-action="Register">Autor werden</a></li>
+                        <li><a asp-controller="Demo" asp-action="Index">Demo-Zugang</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>Rechtliches</h2>
+                    <ul>
+                        <li><a href="@demo.ImpressumUrl" target="_blank" rel="noopener">Impressum</a></li>
+                        <li><a href="@demo.DatenschutzUrl" target="_blank" rel="noopener">Datenschutz</a></li>
+                        <li><a href="@demo.GitHubUrl" target="_blank" rel="noopener"><i class="fa-brands fa-github me-1"></i>Quellcode</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="bottom">
+                <span>© @DateTime.Now.Year CoreBlog – ein Portfolio-Projekt von <a href="@demo.PortfolioUrl" target="_blank" rel="noopener">Amir Reza Afshar</a></span>
+                <span>Alle Inhalte sind Beispieldaten.</span>
+            </div>
+        </div>
+    </footer>
+
+    <partial name="_Flash" />
+    <partial name="_ConfirmModal" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

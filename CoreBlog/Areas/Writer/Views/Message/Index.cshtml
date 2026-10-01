@@ -1,0 +1,53 @@
+@model MessageListViewModel
+@{
+    ViewData["Title"] = "Nachrichten";
+    var inbox = Model.Box == "inbox";
+}
+@section Actions { <a class="btn btn-ink btn-sm" asp-action="Compose"><i class="fa-solid fa-pen me-1"></i>Neue Nachricht</a> }
+
+<div class="toolbar">
+    <nav class="tabs-x" aria-label="Postfach">
+        <a class="@(inbox ? "is-active" : null)" asp-route-box="inbox">Posteingang <span class="n">@Model.InboxCount</span></a>
+        <a class="@(!inbox ? "is-active" : null)" asp-route-box="sent">Gesendet <span class="n">@Model.SentCount</span></a>
+    </nav>
+    @if (inbox && Model.UnreadCount > 0) { <span class="status status-warn">@Model.UnreadCount ungelesen</span> }
+</div>
+
+<div class="card-x">
+    @if (!Model.Messages.Any())
+    {
+        <div class="empty"><i class="fa-regular fa-envelope-open"></i><h3>@(inbox ? "Ihr Posteingang ist leer" : "Noch nichts gesendet")</h3><p>Schreiben Sie einer Kollegin oder einem Kollegen aus der Redaktion.</p><a class="btn btn-ink" asp-action="Compose">Nachricht schreiben</a></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table-x">
+                <thead><tr><th>@(inbox ? "Von" : "An")</th><th>Betreff</th><th>Datum</th><th><span class="visually-hidden">Aktionen</span></th></tr></thead>
+                <tbody>
+                    @foreach (var m in Model.Messages)
+                    {
+                        var person = inbox ? m.Sender : m.Receiver;
+                        <tr class="@(inbox && !m.IsRead ? "is-unread" : null)">
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img class="avatar" src="@ViewHelpers.Avatar(person?.Image)" width="34" height="34" alt="" />
+                                    <span>@(person?.Name ?? "Gelöschtes Konto")</span>
+                                </div>
+                            </td>
+                            <td style="min-width:260px"><a class="subject text-decoration-none" asp-action="Read" asp-route-id="@m.Id">@m.Subject</a><div class="sub">@ViewHelpers.Short(m.Details, 80)</div></td>
+                            <td class="sub">@ViewHelpers.Relative(m.Date)</td>
+                            <td>
+                                <div class="row-actions">
+                                    <a class="btn btn-ghost btn-icon" asp-action="Read" asp-route-id="@m.Id" aria-label="Öffnen" title="Öffnen"><i class="fa-regular fa-envelope-open"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@m.Id" asp-route-box="@Model.Box" method="post" data-confirm="Die Nachricht wird für beide Seiten gelöscht." data-confirm-title="Nachricht löschen?">
+                                        <button class="btn btn-danger-ghost btn-icon" type="submit" aria-label="Löschen" title="Löschen"><i class="fa-regular fa-trash-can"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

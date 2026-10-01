@@ -1,0 +1,137 @@
+@inject Microsoft.Extensions.Options.IOptions<DemoOptions> DemoConfig
+@inject BLL.Abstract.IWriterService WriterService
+@inject BLL.Abstract.IMessageService MessageService
+@inject BLL.Abstract.ICommentService CommentService
+@inject BLL.Abstract.IContactService ContactService
+@{
+    var demo = DemoConfig.Value;
+    var area = ViewContext.RouteData.Values["area"]?.ToString();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var isAdminArea = area == "Admin";
+    var isAdmin = User.IsInRole(DataSeeder.AdminRole);
+    var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+    var me = WriterService.GetByAppUserId(userId);
+    var unreadMessages = me == null ? 0 : MessageService.UnreadCount(me.Id);
+    var pendingComments = isAdminArea ? CommentService.GetList().Count(c => !c.Status) : 0;
+    var unreadContacts = isAdminArea ? ContactService.UnreadCount() : 0;
+    string Active(string c) => string.Equals(controller, c, StringComparison.OrdinalIgnoreCase) ? "is-active" : null;
+    var title = ViewData["Title"] as string ?? "Übersicht";
+}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>@title – @(isAdminArea ? "Admin-Panel" : "Autorenbereich") – CoreBlog</title>
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/panel.css" asp-append-version="true" />
+</head>
+<body class="panel">
+    <a class="visually-hidden-focusable" href="#inhalt">Zum Inhalt springen</a>
+    <div class="panel-shell">
+        <aside class="sidebar" aria-label="Navigation">
+            <a class="brand" asp-area="" asp-controller="Home" asp-action="Index"><span class="brand-mark"><i class="fa-solid fa-pen-nib"></i></span>CoreBlog</a>
+            <span class="area-label">@(isAdminArea ? "Admin-Panel" : "Autorenbereich")</span>
+            @if (me != null)
+            {
+                <div class="me">
+                    <img class="avatar" src="@ViewHelpers.Avatar(me.Image)" width="40" height="40" alt="" />
+                    <div><strong>@me.Name</strong><span>@(isAdmin ? "Administrator" : "Autorin / Autor")</span></div>
+                </div>
+            }
+            <nav class="side-nav">
+                @if (isAdminArea)
+                {
+                    <a class="@Active("Dashboard")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-gauge-high"></i>Übersicht</a>
+                    <h2>Inhalte</h2>
+                    <a class="@Active("Blog")" asp-area="Admin" asp-controller="Blog" asp-action="Index"><i class="fa-regular fa-newspaper"></i>Beiträge</a>
+                    <a class="@Active("Category")" asp-area="Admin" asp-controller="Category" asp-action="Index"><i class="fa-solid fa-tags"></i>Kategorien</a>
+                    <a class="@Active("Comment")" asp-area="Admin" asp-controller="Comment" asp-action="Index"><i class="fa-regular fa-comments"></i>Kommentare @if (pendingComments > 0) { <span class="badge-count">@pendingComments</span> }</a>
+                    <a class="@Active("About")" asp-area="Admin" asp-controller="About" asp-action="Index"><i class="fa-regular fa-id-card"></i>Seite „Über uns“</a>
+                    <h2>Menschen</h2>
+                    <a class="@Active("Writer")" asp-area="Admin" asp-controller="Writer" asp-action="Index"><i class="fa-solid fa-user-pen"></i>Autoren & Rollen</a>
+                    <a class="@Active("Contact")" asp-area="Admin" asp-controller="Contact" asp-action="Index"><i class="fa-regular fa-envelope"></i>Kontaktanfragen @if (unreadContacts > 0) { <span class="badge-count">@unreadContacts</span> }</a>
+                    <a class="@Active("Newsletter")" asp-area="Admin" asp-controller="Newsletter" asp-action="Index"><i class="fa-solid fa-paper-plane"></i>Newsletter</a>
+                    <a class="@Active("Notification")" asp-area="Admin" asp-controller="Notification" asp-action="Index"><i class="fa-solid fa-bullhorn"></i>Hinweise für Autoren</a>
+                    <h2>Wechseln</h2>
+                    <a asp-area="Writer" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-pen-nib"></i>Zum Autorenbereich</a>
+                }
+                else
+                {
+                    <a class="@Active("Dashboard")" asp-area="Writer" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-gauge-high"></i>Übersicht</a>
+                    <h2>Schreiben</h2>
+                    <a asp-area="Writer" asp-controller="Blog" asp-action="Create"><i class="fa-solid fa-plus"></i>Neuer Beitrag</a>
+                    <a class="@Active("Blog")" asp-area="Writer" asp-controller="Blog" asp-action="Index"><i class="fa-regular fa-newspaper"></i>Meine Beiträge</a>
+                    <a class="@Active("Comment")" asp-area="Writer" asp-controller="Comment" asp-action="Index"><i class="fa-regular fa-comments"></i>Kommentare</a>
+                    <h2>Austausch</h2>
+                    <a class="@Active("Message")" asp-area="Writer" asp-controller="Message" asp-action="Index"><i class="fa-regular fa-envelope"></i>Nachrichten @if (unreadMessages > 0) { <span class="badge-count">@unreadMessages</span> }</a>
+                    <a class="@Active("Notification")" asp-area="Writer" asp-controller="Notification" asp-action="Index"><i class="fa-regular fa-bell"></i>Hinweise</a>
+                    <h2>Konto</h2>
+                    <a class="@Active("Profile")" asp-area="Writer" asp-controller="Profile" asp-action="Index"><i class="fa-regular fa-user"></i>Profil & Passwort</a>
+                    @if (isAdmin)
+                    {
+                        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-shield-halved"></i>Zum Admin-Panel</a>
+                    }
+                }
+            </nav>
+            <div class="foot">
+                <a asp-area="" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Website ansehen</a>
+            </div>
+        </aside>
+
+        <div class="panel-main">
+            @if (demo.Enabled && demo.IsDemoAccount(User.Identity?.Name))
+            {
+                <div class="demo-strip">
+                    <i class="fa-solid fa-flask"></i>
+                    <span>Demo-Modus: Alles darf ausprobiert werden. Die Daten werden alle @demo.ResetIntervalHours Stunden zurückgesetzt.</span>
+                    @if (isAdminArea) { <a asp-area="" asp-controller="Demo" asp-action="Writer">Zur Autorinnen-Ansicht wechseln</a> }
+                    else { <a asp-area="" asp-controller="Demo" asp-action="Admin">Zur Admin-Ansicht wechseln</a> }
+                </div>
+            }
+            <header class="topbar">
+                <button class="icon-link sidebar-toggle" type="button" aria-label="Navigation öffnen" data-sidebar-toggle><i class="fa-solid fa-bars"></i></button>
+                <div>
+                    <div class="crumb">@(isAdminArea ? "Admin-Panel" : "Autorenbereich")</div>
+                    <h1>@title</h1>
+                </div>
+                <div class="actions">
+                    @RenderSection("Actions", required: false)
+                    <a class="icon-link" asp-area="Writer" asp-controller="Message" asp-action="Index" aria-label="Nachrichten" title="Nachrichten">
+                        <i class="fa-regular fa-envelope"></i>@if (unreadMessages > 0) { <span class="dot">@unreadMessages</span> }
+                    </a>
+                    <div class="dropdown">
+                        <button class="icon-link" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Konto"><i class="fa-regular fa-user"></i></button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item-text small text-secondary">@User.Identity?.Name</span></li>
+                            <li><a class="dropdown-item" asp-area="Writer" asp-controller="Profile" asp-action="Index"><i class="fa-regular fa-user"></i>Profil</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house"></i>Website</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                    <button class="dropdown-item" type="submit"><i class="fa-solid fa-right-from-bracket"></i>Abmelden</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+            <main class="panel-content" id="inhalt">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <partial name="_Flash" />
+    <partial name="_ConfirmModal" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BE.concrete
+namespace BE.Concrete
 {
-	public class Notification
-	{
-		[Key]
-        public int id { get; set; }
+    /// <summary>Hinweis, den das Admin-Team für alle Autoren veröffentlicht.</summary>
+    public class Notification
+    {
+        public int Id { get; set; }
         public string Type { get; set; }
-		public string TypeSymbol { get; set; }
-        public string  Details { get; set; }
-        public DateTime Date { get; set; }
-        public bool  Status { get; set; }
-        public  string SymbolColor { get; set; }    
-
+        /// <summary>Font-Awesome-Klasse, z. B. "fa-solid fa-bullhorn".</summary>
+        public string TypeSymbol { get; set; }
+        public string SymbolColor { get; set; }
+        public string Details { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
+        public bool Status { get; set; } = true;
     }
 }

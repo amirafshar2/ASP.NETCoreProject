@@ -1,0 +1,20 @@
+@model List<Notification>
+@{
+    ViewData["Title"] = "Hinweise der Redaktion";
+}
+<div class="card-x narrow">
+    @if (!Model.Any())
+    {
+        <div class="empty"><i class="fa-regular fa-bell"></i><h3>Keine Hinweise</h3><p>Neue Hinweise der Redaktion erscheinen hier.</p></div>
+    }
+    <ul class="mini-list">
+        @foreach (var n in Model)
+        {
+            <li>
+                <span class="note-ico" style="background:@n.SymbolColor"><i class="@n.TypeSymbol"></i></span>
+                <div><div class="t">@n.Type</div><div>@n.Details</div></div>
+                <span class="r s">@n.Date.ToString("dd.MM.yyyy")</span>
+            </li>
+        }
+    </ul>
+</div>

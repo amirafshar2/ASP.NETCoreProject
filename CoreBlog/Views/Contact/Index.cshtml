@@ -1,0 +1,46 @@
+@model Contact
+@{
+    ViewData["Title"] = "Kontakt";
+}
+<section class="page-hero">
+    <div class="wrap">
+        <h1>Schreiben Sie uns</h1>
+        <p>Themenvorschlag, Gastbeitrag oder ein Fehler auf der Seite? Wir antworten in der Regel innerhalb von zwei Werktagen.</p>
+    </div>
+</section>
+<div class="wrap contact-grid">
+    <form asp-action="Index" method="post" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <label class="form-label" asp-for="UserName">Name</label>
+                <input class="form-control" asp-for="UserName" autocomplete="name" />
+                <span class="field-validation-error" asp-validation-for="UserName"></span>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label" asp-for="Mail">E-Mail-Adresse</label>
+                <input class="form-control" asp-for="Mail" type="email" autocomplete="email" />
+                <span class="field-validation-error" asp-validation-for="Mail"></span>
+            </div>
+            <div class="col-12">
+                <label class="form-label" asp-for="Subject">Betreff</label>
+                <input class="form-control" asp-for="Subject" />
+                <span class="field-validation-error" asp-validation-for="Subject"></span>
+            </div>
+            <div class="col-12">
+                <label class="form-label" asp-for="Message">Nachricht</label>
+                <textarea class="form-control" asp-for="Message" rows="7"></textarea>
+                <span class="field-validation-error" asp-validation-for="Message"></span>
+            </div>
+        </div>
+        <button class="btn btn-ink btn-lg mt-4" type="submit"><i class="fa-solid fa-paper-plane me-2"></i>Nachricht senden</button>
+        <p class="form-text mt-3">Ihre Angaben werden nur zur Bearbeitung Ihrer Anfrage gespeichert. Diese Demo setzt alle Daten regelmäßig zurück.</p>
+    </form>
+    <aside>
+        <ul class="info-list">
+            <li><i class="fa-solid fa-envelope"></i><div><strong>E-Mail</strong><span>redaktion@coreblog.demo</span></div></li>
+            <li><i class="fa-solid fa-location-dot"></i><div><strong>Redaktion</strong><span>Stuttgart, Baden-Württemberg</span></div></li>
+            <li><i class="fa-solid fa-pen-nib"></i><div><strong>Gastbeiträge</strong><span>Registrieren Sie sich kostenlos und reichen Sie Ihren Beitrag direkt ein.</span></div></li>
+        </ul>
+    </aside>
+</div>

@@ -1,0 +1,82 @@
+@model List<Blog>
+@{
+    ViewData["Title"] = "Alle Beiträge";
+    var categories = (List<Category>)ViewBag.Categories;
+    var writers = (List<BE.Concrete.Writer>)ViewBag.Writers;
+    string status = ViewBag.Status;
+}
+@section Actions {
+    <a class="btn btn-ghost btn-sm" asp-action="Export"><i class="fa-solid fa-file-csv me-1"></i>Als CSV exportieren</a>
+    <a class="btn btn-ink btn-sm" asp-area="Writer" asp-controller="Blog" asp-action="Create"><i class="fa-solid fa-plus me-1"></i>Neuer Beitrag</a>
+}
+
+<form class="toolbar" method="get">
+    <div class="search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <label class="visually-hidden" for="aq">Titel suchen</label>
+        <input id="aq" class="form-control" name="q" value="@ViewBag.Query" placeholder="Titel suchen" />
+    </div>
+    <label class="visually-hidden" for="fc">Kategorie</label>
+    <select id="fc" class="form-select w-auto" name="category" onchange="this.form.submit()">
+        <option value="">Alle Kategorien</option>
+        @foreach (var c in categories) { <option value="@c.Id" selected="@(ViewBag.Category == c.Id)">@c.Name</option> }
+    </select>
+    <label class="visually-hidden" for="fw">Autor</label>
+    <select id="fw" class="form-select w-auto" name="writer" onchange="this.form.submit()">
+        <option value="">Alle Autoren</option>
+        @foreach (var w in writers) { <option value="@w.Id" selected="@(ViewBag.Writer == w.Id)">@w.Name</option> }
+    </select>
+    <label class="visually-hidden" for="fs">Status</label>
+    <select id="fs" class="form-select w-auto" name="status" onchange="this.form.submit()">
+        <option value="all" selected="@(status == "all")">Alle Status</option>
+        <option value="published" selected="@(status == "published")">Veröffentlicht</option>
+        <option value="draft" selected="@(status == "draft")">Entwürfe</option>
+    </select>
+    <span class="spacer"></span>
+    <span class="text-secondary small">@Model.Count Beiträge</span>
+</form>
+
+<div class="card-x">
+    @if (!Model.Any())
+    {
+        <div class="empty"><i class="fa-regular fa-file-lines"></i><h3>Keine Beiträge gefunden</h3><p>Passen Sie die Filter an.</p><a class="btn btn-ghost" asp-action="Index">Filter zurücksetzen</a></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table-x">
+                <thead><tr><th>Beitrag</th><th>Autor & Datum</th><th>Status</th><th>Aufrufe</th><th>Bewertung</th><th><span class="visually-hidden">Aktionen</span></th></tr></thead>
+                <tbody>
+                    @foreach (var b in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="title-cell">
+                                    <img src="@b.Image" alt="" />
+                                    <div>
+                                        <a asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@b.Id" target="_blank">@b.Title</a>
+                                        <div class="sub d-flex gap-2 align-items-center mt-1"><span class="chip" style="--c:@b.Category.Color"><span class="dot"></span>@b.Category.Name</span>@if (b.IsFeatured) { <span class="status status-warn"><i class="fa-solid fa-star"></i>Titelgeschichte</span> }</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-nowrap"><div class="d-flex align-items-center gap-2"><img class="avatar" src="@ViewHelpers.Avatar(b.Writer.Image)" width="28" height="28" alt="" /><div>@b.Writer.Name<div class="sub">@b.CreateDate.ToString("dd.MM.yyyy")</div></div></div></td>
+                            <td><span class="status @(b.Status ? "status-on" : "status-off")">@(b.Status ? "Online" : "Entwurf")</span></td>
+                            <td>@b.ViewCount.ToString("N0")</td>
+                            <td>@if (b.Rating?.RatingCount > 0) { <span>@b.Rating.Average.ToString("0.0")</span> <span class="sub">(@b.Rating.RatingCount)</span> } else { <span class="sub">–</span> }</td>
+                            <td>
+                                <div class="row-actions">
+                                    @if (!b.IsFeatured && b.Status)
+                                    {
+                                        <form asp-action="Feature" asp-route-id="@b.Id" method="post"><button class="btn btn-ghost btn-icon" type="submit" title="Als Titelgeschichte zeigen" aria-label="Als Titelgeschichte zeigen"><i class="fa-regular fa-star"></i></button></form>
+                                    }
+                                    <form asp-action="ToggleStatus" asp-route-id="@b.Id" method="post"><button class="btn btn-ghost btn-icon" type="submit" title="@(b.Status ? "Zurückziehen" : "Veröffentlichen")" aria-label="@(b.Status ? "Zurückziehen" : "Veröffentlichen")"><i class="fa-solid @(b.Status ? "fa-eye-slash" : "fa-upload")"></i></button></form>
+                                    <form asp-action="Delete" asp-route-id="@b.Id" method="post" data-confirm="„@b.Title“ von @b.Writer.Name wird mit allen Kommentaren endgültig gelöscht." data-confirm-title="Beitrag löschen?"><button class="btn btn-danger-ghost btn-icon" type="submit" title="Löschen" aria-label="Löschen"><i class="fa-regular fa-trash-can"></i></button></form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

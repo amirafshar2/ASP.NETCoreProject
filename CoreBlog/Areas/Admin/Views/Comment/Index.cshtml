@@ -1,0 +1,49 @@
+@model List<Comment>
+@{
+    ViewData["Title"] = "Kommentare";
+    string status = ViewBag.Status;
+    string Tab(string s) => status == s ? "is-active" : null;
+}
+<div class="toolbar">
+    <nav class="tabs-x" aria-label="Filter">
+        <a class="@Tab("all")" asp-route-status="all">Alle <span class="n">@ViewBag.AllCount</span></a>
+        <a class="@Tab("approved")" asp-route-status="approved">Sichtbar</a>
+        <a class="@Tab("pending")" asp-route-status="pending">Ausgeblendet <span class="n">@ViewBag.PendingCount</span></a>
+    </nav>
+</div>
+<div class="card-x">
+    @if (!Model.Any())
+    {
+        <div class="empty"><i class="fa-regular fa-comments"></i><h3>Keine Kommentare in dieser Ansicht</h3></div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table-x">
+                <thead><tr><th>Kommentar</th><th>Beitrag</th><th>Bewertung</th><th>Status</th><th>Datum</th><th><span class="visually-hidden">Aktionen</span></th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td style="min-width:300px"><strong>@c.Title</strong><div>@c.Content</div><div class="sub">@c.UserName, @c.Email</div></td>
+                            <td><a asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@c.BlogId" target="_blank">@ViewHelpers.Short(c.Blog.Title, 45)</a></td>
+                            <td>@ViewHelpers.Stars(c.Score)</td>
+                            <td><span class="status @(c.Status ? "status-on" : "status-off")">@(c.Status ? "Sichtbar" : "Ausgeblendet")</span></td>
+                            <td class="sub">@ViewHelpers.Relative(c.Date)</td>
+                            <td>
+                                <div class="row-actions">
+                                    <form asp-action="ToggleStatus" asp-route-id="@c.Id" asp-route-status="@status" method="post">
+                                        <button class="btn btn-ghost btn-sm" type="submit">@(c.Status ? "Ausblenden" : "Freischalten")</button>
+                                    </form>
+                                    <form asp-action="Delete" asp-route-id="@c.Id" asp-route-status="@status" method="post" data-confirm="Der Kommentar von @c.UserName wird endgültig gelöscht. Die Bewertung des Beitrags wird neu berechnet." data-confirm-title="Kommentar löschen?">
+                                        <button class="btn btn-danger-ghost btn-icon" type="submit" title="Löschen" aria-label="Löschen"><i class="fa-regular fa-trash-can"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

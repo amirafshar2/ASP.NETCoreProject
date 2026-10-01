@@ -1,14 +1,13 @@
-﻿using BE.concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BE.Concrete;
 
 namespace BLL.Abstract
 {
-    public interface IMessageService : IGenericService<Message2>
+    public interface IMessageService : IGenericService<Message>
     {
-        List<Message2> GetListBayWriter(int id);
+        List<Message> GetInbox(int writerId);
+        List<Message> GetSent(int writerId);
+        Message GetForWriter(int id, int writerId);
+        int UnreadCount(int writerId);
+        void MarkAsRead(int id);
     }
 }

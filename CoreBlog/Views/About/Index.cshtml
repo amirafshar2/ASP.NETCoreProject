@@ -1,0 +1,46 @@
+@model AboutViewModel
+@{
+    ViewData["Title"] = "Über uns";
+    var a = Model.About;
+}
+<section class="page-hero">
+    <div class="wrap">
+        <h1>@(a?.Title ?? "Über CoreBlog")</h1>
+        <p>@a?.Details1</p>
+    </div>
+</section>
+
+<div class="wrap">
+    <div class="facts">
+        <div><strong>@Model.BlogCount</strong><span>veröffentlichte Beiträge</span></div>
+        <div><strong>@Model.Writers.Count</strong><span>Autorinnen und Autoren</span></div>
+        <div><strong>@Model.CommentCount</strong><span>Kommentare von Lesern</span></div>
+    </div>
+
+    <section class="about-grid">
+        <img src="@(a?.Image1 ?? "/img/blog/banner5.jpg")" alt="" />
+        <div>
+            <h2 class="mb-3">So arbeiten wir</h2>
+            <p class="prose mb-3" style="font-size:1.08rem">@a?.Details2</p>
+            @if (!string.IsNullOrEmpty(a?.MapLocation))
+            {
+                <p class="text-secondary"><i class="fa-solid fa-location-dot me-2"></i>Redaktion in @a.MapLocation</p>
+            }
+            <a class="btn btn-ink mt-2" asp-controller="Account" asp-action="Register">Selbst schreiben</a>
+        </div>
+    </section>
+
+    <section aria-labelledby="team-title">
+        <div class="section-head"><h2 id="team-title">Die Redaktion</h2></div>
+        <div class="team" style="padding-top:0">
+            @foreach (var w in Model.Writers)
+            {
+                <a asp-controller="Blog" asp-action="Author" asp-route-id="@w.Id">
+                    <img src="@ViewHelpers.Avatar(w.Image)" alt="" />
+                    <h3>@w.Name</h3>
+                    <p>@w.Blogs.Count(b => b.Status) Beiträge</p>
+                </a>
+            }
+        </div>
+    </section>
+</div>

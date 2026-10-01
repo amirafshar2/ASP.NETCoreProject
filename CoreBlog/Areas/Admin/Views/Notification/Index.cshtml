@@ -1,0 +1,27 @@
+@model List<Notification>
+@{
+    ViewData["Title"] = "Hinweise für Autoren";
+}
+@section Actions { <a class="btn btn-ink btn-sm" asp-action="Create"><i class="fa-solid fa-plus me-1"></i>Neuer Hinweis</a> }
+<div class="card-x">
+    <div class="head"><div><h2>Hinweise</h2><p>Aktive Hinweise erscheinen auf dem Dashboard aller Autorinnen und Autoren.</p></div></div>
+    @if (!Model.Any())
+    {
+        <div class="empty"><i class="fa-solid fa-bullhorn"></i><h3>Keine Hinweise</h3><a class="btn btn-ink" asp-action="Create">Hinweis erstellen</a></div>
+    }
+    <ul class="mini-list">
+        @foreach (var n in Model)
+        {
+            <li>
+                <span class="note-ico" style="background:@n.SymbolColor"><i class="@n.TypeSymbol"></i></span>
+                <div><div class="t">@n.Type</div><div class="s">@n.Details</div><div class="s mt-1">@n.Date.ToString("dd.MM.yyyy")</div></div>
+                <div class="r d-flex gap-2 align-items-center">
+                    <span class="status @(n.Status ? "status-on" : "status-off")">@(n.Status ? "Aktiv" : "Inaktiv")</span>
+                    <a class="btn btn-ghost btn-icon" asp-action="Edit" asp-route-id="@n.Id" title="Bearbeiten" aria-label="Bearbeiten"><i class="fa-solid fa-pen"></i></a>
+                    <form asp-action="ToggleStatus" asp-route-id="@n.Id" method="post"><button class="btn btn-ghost btn-icon" type="submit" title="@(n.Status ? "Deaktivieren" : "Aktivieren")" aria-label="@(n.Status ? "Deaktivieren" : "Aktivieren")"><i class="fa-solid @(n.Status ? "fa-eye-slash" : "fa-eye")"></i></button></form>
+                    <form asp-action="Delete" asp-route-id="@n.Id" method="post" data-confirm="Der Hinweis „@n.Type“ wird gelöscht." data-confirm-title="Hinweis löschen?"><button class="btn btn-danger-ghost btn-icon" type="submit" title="Löschen" aria-label="Löschen"><i class="fa-regular fa-trash-can"></i></button></form>
+                </div>
+            </li>
+        }
+    </ul>
+</div>

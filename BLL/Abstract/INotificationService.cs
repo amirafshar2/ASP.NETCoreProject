@@ -1,14 +1,10 @@
-﻿using BE.concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BE.Concrete;
 
 namespace BLL.Abstract
 {
-	public interface INotificationService : IGenericService<Notification>
-	{
-        public List<Notification> GetAllTrue();
+    public interface INotificationService : IGenericService<Notification>
+    {
+        List<Notification> GetActiveList();
+        void ToggleStatus(int id);
     }
 }

@@ -1,0 +1,125 @@
+/* =========================================================
+   CoreBlog – gemeinsame Basis (Schriften, Farben, Elemente)
+   Schriften lokal eingebunden (keine Verbindung zu Google, DSGVO)
+   ========================================================= */
+@font-face { font-family: "Bricolage"; src: url("../fonts/bricolage-grotesque-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Bricolage"; src: url("../fonts/bricolage-grotesque-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Bricolage"; src: url("../fonts/bricolage-grotesque-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Bricolage"; src: url("../fonts/bricolage-grotesque-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Bricolage"; src: url("../fonts/bricolage-grotesque-latin-800-normal.woff2") format("woff2"); font-weight: 800; font-display: swap; }
+@font-face { font-family: "Literata"; src: url("../fonts/literata-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Literata"; src: url("../fonts/literata-latin-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Literata"; src: url("../fonts/literata-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Literata"; src: url("../fonts/literata-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+
+:root {
+    --ink: #1B2A4A;          /* Füllfederblau – Text, Flächen */
+    --ink-2: #33446A;
+    --muted: #5E6B82;
+    --line: #E2E7EF;
+    --paper: #FFFFFF;
+    --mist: #F3F5F9;
+    --blue: #2F5BEA;         /* Links & Aktionen */
+    --blue-ink: #2448C2;
+    --marker: #FFD84D;       /* Textmarker – das eine auffällige Element */
+    --marker-soft: #FFF3C4;
+    --danger: #C8372D;
+    --success: #1F8A5B;
+    --warning: #A86A0C;
+    --radius-s: 6px;
+    --radius: 10px;
+    --radius-l: 16px;
+    --shadow: 0 1px 2px rgba(27, 42, 74, .06), 0 8px 24px -12px rgba(27, 42, 74, .18);
+    --font-ui: "Bricolage", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-read: "Literata", Georgia, "Times New Roman", serif;
+
+    --bs-body-font-family: var(--font-ui);
+    --bs-body-color: var(--ink);
+    --bs-link-color: var(--blue);
+    --bs-link-hover-color: var(--blue-ink);
+    --bs-border-color: var(--line);
+}
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+body { font-family: var(--font-ui); color: var(--ink); background: var(--paper); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-ui); color: var(--ink); font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; }
+a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--blue-ink); }
+img { max-width: 100%; }
+::selection { background: var(--marker); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+
+/* Textmarker-Effekt: der Hintergrund läuft wie ein Leuchtstift über mehrere Zeilen */
+.marker { background: linear-gradient(transparent 58%, var(--marker) 58%, var(--marker) 92%, transparent 92%); -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 .08em; }
+
+/* ---------- Buttons ---------- */
+.btn { font-family: var(--font-ui); font-weight: 600; border-radius: 8px; padding: .55rem 1.05rem; letter-spacing: -0.005em; }
+.btn-sm { padding: .32rem .7rem; font-size: .85rem; border-radius: 7px; }
+.btn-lg { padding: .8rem 1.4rem; font-size: 1.05rem; }
+.btn-primary { --bs-btn-bg: var(--blue); --bs-btn-border-color: var(--blue); --bs-btn-hover-bg: var(--blue-ink); --bs-btn-hover-border-color: var(--blue-ink); --bs-btn-active-bg: var(--blue-ink); --bs-btn-active-border-color: var(--blue-ink); }
+.btn-ink { background: var(--ink); color: #fff; border: 1px solid var(--ink); }
+.btn-ink:hover, .btn-ink:focus { background: var(--ink-2); color: #fff; }
+.btn-marker { background: var(--marker); color: var(--ink); border: 1px solid #F0C52E; }
+.btn-marker:hover, .btn-marker:focus { background: #FFCF26; color: var(--ink); }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn-ghost:hover { background: var(--mist); color: var(--ink); border-color: #CDD5E1; }
+.btn-danger-ghost { background: transparent; color: var(--danger); border: 1px solid #F1CFCB; }
+.btn-danger-ghost:hover { background: #FCEDEB; color: var(--danger); }
+.btn-icon { width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; }
+
+/* ---------- Formulare ---------- */
+.form-label { font-weight: 600; font-size: .92rem; margin-bottom: .35rem; color: var(--ink); }
+.form-control, .form-select { border-color: #D4DBE6; border-radius: 8px; padding: .6rem .8rem; font-family: var(--font-ui); color: var(--ink); }
+.form-control:focus, .form-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47, 91, 234, .18); }
+.form-control::placeholder { color: #98A3B6; }
+.form-text { color: var(--muted); font-size: .84rem; }
+.form-check-input:checked { background-color: var(--blue); border-color: var(--blue); }
+.field-validation-error, .text-danger { color: var(--danger) !important; font-size: .86rem; }
+.input-validation-error { border-color: var(--danger) !important; }
+.validation-summary-errors ul { margin: 0; padding-left: 1.1rem; }
+
+/* ---------- Chips & Badges ---------- */
+.chip { display: inline-flex; align-items: center; gap: .4rem; padding: .2rem .65rem; border-radius: 999px; font-size: .8rem; font-weight: 600; text-decoration: none; background: var(--mist); color: var(--ink); border: 1px solid transparent; white-space: nowrap; }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--blue)); }
+a.chip:hover { border-color: var(--c, var(--blue)); color: var(--ink); }
+.chip.is-active { background: var(--ink); color: #fff; }
+.chip.is-active .dot { box-shadow: 0 0 0 2px #fff; }
+
+.status { display: inline-flex; align-items: center; gap: .35rem; font-size: .8rem; font-weight: 600; padding: .15rem .55rem; border-radius: 6px; }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.status-on { color: var(--success); background: #E5F4EC; }
+.status-off { color: #6B7489; background: #EEF0F4; }
+.status-warn { color: var(--warning); background: #FBF0DC; }
+.status-danger { color: var(--danger); background: #FCEBE9; }
+
+.avatar { border-radius: 50%; object-fit: cover; background: var(--mist); flex-shrink: 0; }
+.stars { color: #E2A400; letter-spacing: 1px; white-space: nowrap; }
+.stars .off { color: #D5DBE5; }
+
+/* ---------- Hinweise (Toasts) ---------- */
+.flash-stack { position: fixed; right: 20px; bottom: 20px; z-index: 1090; display: flex; flex-direction: column; gap: 10px; max-width: min(420px, calc(100vw - 40px)); }
+.flash { display: flex; gap: .75rem; align-items: flex-start; background: var(--ink); color: #fff; padding: .85rem 1rem; border-radius: var(--radius); box-shadow: var(--shadow); animation: flash-in .35s ease-out; }
+.flash i { margin-top: 3px; }
+.flash.is-success i { color: var(--marker); }
+.flash.is-error { background: #7D1F18; }
+.flash button { margin-left: auto; background: none; border: 0; color: rgba(255,255,255,.7); padding: 0 0 0 .5rem; }
+@keyframes flash-in { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------- Leerer Zustand ---------- */
+.empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+.empty i { font-size: 2rem; color: #B5C0D2; margin-bottom: .75rem; display: block; }
+.empty h3 { font-size: 1.15rem; margin-bottom: .35rem; }
+
+/* ---------- Bestätigungsdialog ---------- */
+.modal-content { border: 0; border-radius: var(--radius-l); box-shadow: var(--shadow); }
+.modal-header, .modal-footer { border: 0; }
+.modal-title { font-size: 1.15rem; }
+
+.visually-hidden-focusable:focus { position: fixed !important; top: 10px; left: 10px; z-index: 2000; background: var(--marker); color: var(--ink); padding: .5rem 1rem; border-radius: 8px; }
+
+/* ---------- Marke ---------- */
+.brand { display: inline-flex; align-items: center; gap: .55rem; text-decoration: none; color: var(--ink); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.03em; }
+.brand:hover { color: var(--ink); }
+.brand-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--marker); display: grid; place-items: center; font-size: 1rem; color: var(--ink); box-shadow: inset 0 -3px 0 rgba(27,42,74,.15); }

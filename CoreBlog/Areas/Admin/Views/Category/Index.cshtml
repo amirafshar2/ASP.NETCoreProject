@@ -1,0 +1,32 @@
+@model List<Category>
+@{
+    ViewData["Title"] = "Kategorien";
+}
+@section Actions { <a class="btn btn-ink btn-sm" asp-action="Create"><i class="fa-solid fa-plus me-1"></i>Neue Kategorie</a> }
+
+<div class="card-x">
+    <div class="table-wrap">
+        <table class="table-x">
+            <thead><tr><th>Kategorie</th><th>Beschreibung</th><th>Beiträge</th><th>Status</th><th><span class="visually-hidden">Aktionen</span></th></tr></thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td><span class="chip" style="--c:@c.Color"><span class="dot"></span>@c.Name</span></td>
+                        <td class="sub" style="max-width:420px">@c.Description</td>
+                        <td>@c.Blogs.Count</td>
+                        <td><span class="status @(c.Status ? "status-on" : "status-off")">@(c.Status ? "Aktiv" : "Ausgeblendet")</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <a class="btn btn-ghost btn-icon" asp-action="Edit" asp-route-id="@c.Id" title="Bearbeiten" aria-label="Bearbeiten"><i class="fa-solid fa-pen"></i></a>
+                                <form asp-action="ToggleStatus" asp-route-id="@c.Id" method="post"><button class="btn btn-ghost btn-icon" type="submit" title="@(c.Status ? "Ausblenden" : "Aktivieren")" aria-label="@(c.Status ? "Ausblenden" : "Aktivieren")"><i class="fa-solid @(c.Status ? "fa-eye-slash" : "fa-eye")"></i></button></form>
+                                <form asp-action="Delete" asp-route-id="@c.Id" method="post" data-confirm="Die Kategorie „@c.Name“ wird gelöscht. Das geht nur, wenn ihr keine Beiträge zugeordnet sind." data-confirm-title="Kategorie löschen?"><button class="btn btn-danger-ghost btn-icon" type="submit" title="Löschen" aria-label="Löschen"><i class="fa-regular fa-trash-can"></i></button></form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<p class="form-text mt-3">Ausgeblendete Kategorien und ihre Beiträge sind auf der Website nicht sichtbar, bleiben aber erhalten.</p>

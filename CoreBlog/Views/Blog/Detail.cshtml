@@ -1,0 +1,155 @@
+@model BlogDetailViewModel
+@{
+    var b = Model.Blog;
+    ViewData["Title"] = b.Title;
+    ViewData["Description"] = b.Summary;
+    var rating = b.Rating;
+    var draft = TempData["CommentDraft"] is string json ? System.Text.Json.JsonSerializer.Deserialize<CommentForm>(json) : Model.Comment;
+    draft.BlogId = b.Id;
+    var errors = ViewBag.CommentErrors as string[];
+}
+
+@if (ViewBag.IsPreview == true)
+{
+    <div class="preview-banner">
+        <div class="wrap"><i class="fa-solid fa-eye me-2"></i>Vorschau: Dieser Beitrag ist nicht öffentlich sichtbar.
+            <a asp-area="Writer" asp-controller="Blog" asp-action="Edit" asp-route-id="@b.Id">Bearbeiten</a></div>
+    </div>
+}
+
+<article>
+    <header class="article-head">
+        <div class="wrap">
+            <div class="inner">
+                <a class="chip" style="--c:@b.Category.Color" asp-controller="Home" asp-action="Index" asp-route-category="@b.CategoryId"><span class="dot"></span>@b.Category.Name</a>
+                <h1>@b.Title</h1>
+                <p class="lead">@b.Summary</p>
+                <div class="byline">
+                    <img class="avatar" src="@ViewHelpers.Avatar(b.Writer.Image)" width="40" height="40" alt="" />
+                    <a asp-controller="Blog" asp-action="Author" asp-route-id="@b.WriterId"><strong>@b.Writer.Name</strong></a>
+                    <span class="sep"></span><time datetime="@b.CreateDate.ToString("yyyy-MM-dd")">@b.CreateDate.ToString("d. MMMM yyyy")</time>
+                    <span class="sep"></span><span>@b.ReadingMinutes Min. Lesezeit</span>
+                    <span class="sep"></span><span>@b.ViewCount.ToString("N0") Aufrufe</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="article-hero"><img src="@b.Image" alt="" /></div>
+
+        <div class="article-layout">
+            <div>
+                <div class="prose">@ContentFormatter.ToHtml(b.Content)</div>
+
+                <aside class="author-card" aria-label="Über den Autor">
+                    <img class="avatar" src="@ViewHelpers.Avatar(b.Writer.Image)" width="72" height="72" alt="" />
+                    <div>
+                        <h3>@b.Writer.Name</h3>
+                        <p>@(string.IsNullOrWhiteSpace(b.Writer.About) ? "Schreibt für CoreBlog." : b.Writer.About)</p>
+                        <a asp-controller="Blog" asp-action="Author" asp-route-id="@b.WriterId">Alle @Model.WriterBlogCount Beiträge ansehen</a>
+                    </div>
+                </aside>
+
+                <section class="comments" aria-labelledby="kommentare">
+                    <h2 id="kommentare">@b.Comments.Count @(b.Comments.Count == 1 ? "Kommentar" : "Kommentare")</h2>
+                    @if (!b.Comments.Any())
+                    {
+                        <p class="text-secondary">Noch keine Kommentare. Schreiben Sie den ersten!</p>
+                    }
+                    @foreach (var c in b.Comments)
+                    {
+                        <div class="comment">
+                            <div class="initial" aria-hidden="true">@ViewHelpers.Initial(c.UserName)</div>
+                            <div>
+                                <h3>@c.Title</h3>
+                                <div class="meta">@c.UserName, @ViewHelpers.Relative(c.Date) @ViewHelpers.Stars(c.Score)</div>
+                                <p>@c.Content</p>
+                            </div>
+                        </div>
+                    }
+
+                    <form class="comment-form" id="kommentieren" asp-controller="Comment" asp-action="Add" method="post" novalidate>
+                        <h2>Kommentar schreiben</h2>
+                        <p class="text-secondary mb-3">Ihre E-Mail-Adresse wird nicht veröffentlicht.</p>
+                        @if (errors != null)
+                        {
+                            <div class="alert alert-danger"><ul class="mb-0 ps-3">@foreach (var e in errors) { <li>@e</li> }</ul></div>
+                        }
+                        <input type="hidden" name="BlogId" value="@b.Id" />
+                        <fieldset class="mb-3">
+                            <legend class="form-label">Ihre Bewertung</legend>
+                            <div class="star-input">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    <input type="radio" id="star@(i)" name="Score" value="@i" @(draft.Score == i ? "checked" : null) />
+                                    <label for="star@(i)" title="@i von 5 Sternen"><i class="fa-solid fa-star"></i><span class="visually-hidden">@i Sterne</span></label>
+                                }
+                            </div>
+                        </fieldset>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label" for="c-name">Name</label>
+                                <input class="form-control" id="c-name" name="UserName" value="@draft.UserName" maxlength="60" required />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label" for="c-mail">E-Mail-Adresse</label>
+                                <input class="form-control" id="c-mail" type="email" name="Email" value="@draft.Email" required />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="c-title">Betreff</label>
+                                <input class="form-control" id="c-title" name="Title" value="@draft.Title" maxlength="100" required />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="c-text">Kommentar</label>
+                                <textarea class="form-control" id="c-text" name="Content" rows="5" maxlength="1500" required>@draft.Content</textarea>
+                            </div>
+                        </div>
+                        <button class="btn btn-ink mt-3" type="submit">Kommentar veröffentlichen</button>
+                    </form>
+                </section>
+            </div>
+
+            <aside class="toc">
+                @if (Model.Headings.Any())
+                {
+                    <h2>In diesem Beitrag</h2>
+                    <ol>
+                        @foreach (var h in Model.Headings)
+                        {
+                            <li><a href="#@h.Id">@h.Text</a></li>
+                        }
+                    </ol>
+                }
+                <div class="rating-box">
+                    @if (rating != null && rating.RatingCount > 0)
+                    {
+                        <div class="d-flex align-items-baseline gap-2"><span class="big">@rating.Average.ToString("0.0")</span><span class="text-secondary">von 5</span></div>
+                        <div class="my-1">@ViewHelpers.Stars(rating.Average)</div>
+                        <div class="small text-secondary">@rating.RatingCount Bewertungen von Leserinnen und Lesern</div>
+                    }
+                    else
+                    {
+                        <div class="small text-secondary">Noch keine Bewertung.</div>
+                    }
+                    <a class="btn btn-ghost btn-sm mt-3 w-100" href="#kommentieren">Beitrag bewerten</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+</article>
+
+@if (Model.Related.Any())
+{
+    <section class="related" aria-labelledby="related-title">
+        <div class="wrap">
+            <div class="section-head"><h2 id="related-title">Das könnte Sie auch interessieren</h2></div>
+            <div class="post-grid">
+                @foreach (var r in Model.Related)
+                {
+                    <partial name="_PostCard" model="r" />
+                }
+            </div>
+        </div>
+    </section>
+}
