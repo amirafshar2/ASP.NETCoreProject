@@ -11,14 +11,14 @@
 ![EF Core](https://img.shields.io/badge/EF%20Core-8-6C3483)
 ![SQLite](https://img.shields.io/badge/SQLite-im%20Projekt-003B57?logo=sqlite&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Render-2496ED?logo=docker&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Oracle%20Cloud-2496ED?logo=docker&logoColor=white)
 ![DSGVO](https://img.shields.io/badge/DSGVO-keine%20externen%20CDNs-1F8A5B)
 
-<a href="https://blog-87ze.onrender.com"><img src="https://img.shields.io/badge/Live--Website-blog--87ze.onrender.com-1B2A4A?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live-Website"></a>
-<a href="https://blog-87ze.onrender.com/demo/admin"><img src="https://img.shields.io/badge/Admin--Panel-Demo_starten-FFD84D?style=for-the-badge&labelColor=1B2A4A" alt="Admin-Demo"></a>
-<a href="https://blog-87ze.onrender.com/demo/writer"><img src="https://img.shields.io/badge/Autorenbereich-Demo_starten-FFD84D?style=for-the-badge&labelColor=1B2A4A" alt="Autoren-Demo"></a>
+<a href="https://blog.amirrezaafshar.de"><img src="https://img.shields.io/badge/Live--Website-blog.amirrezaafshar.de-1B2A4A?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live-Website"></a>
+<a href="https://blog.amirrezaafshar.de/demo/admin"><img src="https://img.shields.io/badge/Admin--Panel-Demo_starten-FFD84D?style=for-the-badge&labelColor=1B2A4A" alt="Admin-Demo"></a>
+<a href="https://blog.amirrezaafshar.de/demo/writer"><img src="https://img.shields.io/badge/Autorenbereich-Demo_starten-FFD84D?style=for-the-badge&labelColor=1B2A4A" alt="Autoren-Demo"></a>
 
-**Live:** [blog-87ze.onrender.com](https://blog-87ze.onrender.com) – ohne Registrierung testen
+**Live:** [blog.amirrezaafshar.de](https://blog.amirrezaafshar.de) – ohne Registrierung testen
 
 [Live-Demo](#demo) · [Funktionen](#funktionen) · [Architektur](#architektur) · [Screenshots](#screenshots) · [Lokal starten](#start)
 
@@ -40,17 +40,15 @@ Das Projekt zeigt eine vollständige **mehrschichtige ASP.NET-Core-Anwendung**: 
 
 Die Demo funktioniert **ohne Registrierung**: ein Klick, und Sie sind angemeldet.
 
-🔗 **https://blog-87ze.onrender.com**
+🔗 **https://blog.amirrezaafshar.de**
 
 | Zugang | Direkt öffnen | Angemeldet als |
 |---|---|---|
-| 🛠️ Admin-Panel | [**/demo/admin**](https://blog-87ze.onrender.com/demo/admin) | Daniel Krüger, Chefredakteur |
-| 🖋️ Autorenbereich | [**/demo/writer**](https://blog-87ze.onrender.com/demo/writer) | Lena Hoffmann, Autorin |
-| 🌐 Öffentliche Website | [**Startseite**](https://blog-87ze.onrender.com) | – |
-| 🧭 Demo-Übersicht | [**/demo**](https://blog-87ze.onrender.com/demo) | – |
+| 🛠️ Admin-Panel | [**/demo/admin**](https://blog.amirrezaafshar.de/demo/admin) | Daniel Krüger, Chefredakteur |
+| 🖋️ Autorenbereich | [**/demo/writer**](https://blog.amirrezaafshar.de/demo/writer) | Lena Hoffmann, Autorin |
+| 🌐 Öffentliche Website | [**Startseite**](https://blog.amirrezaafshar.de) | – |
+| 🧭 Demo-Übersicht | [**/demo**](https://blog.amirrezaafshar.de/demo) | – |
 
-> ⏳ Die Demo läuft im kostenlosen Render-Plan: Nach längerer Inaktivität kann der erste Aufruf bis zu einer Minute dauern.
->
 > Alle Funktionen dürfen ausprobiert werden. Die Demo-Datenbank wird **alle 6 Stunden automatisch zurückgesetzt**.
 > Passwort, Rolle und Status der Demo-Konten sind geschützt, damit die Demo für alle Besucher erreichbar bleibt.
 
@@ -150,7 +148,7 @@ CoreBlog.sln
 | Backend | C#, ASP.NET Core 8 MVC, Entity Framework Core 8, ASP.NET Core Identity, FluentValidation |
 | Datenbank | SQLite (Datei im Projekt, wird bei Bedarf automatisch angelegt und befüllt) |
 | Frontend | Razor Views, HTML, CSS, JavaScript, Bootstrap 5, Chart.js, Font Awesome |
-| Deployment | Docker, Render (Region Frankfurt) |
+| Deployment | Docker, Oracle Cloud (Frankfurt), Caddy, Auto-Deploy bei Push |
 
 ---
 
@@ -203,13 +201,19 @@ In Visual Studio: `CoreBlog.sln` öffnen und das Projekt **CoreBlog** starten.
 
 ---
 
-## ☁️ Deployment auf Render
+## ☁️ Deployment
 
-`Dockerfile` und `render.yaml` sind enthalten.
+Die Live-Demo läuft als **Docker-Container auf meinem eigenen Server bei Oracle Cloud (Region Frankfurt)** hinter Caddy mit HTTPS.
+Bei jedem Push auf `master` holt sich der Server den neuen Stand automatisch, baut das Image neu und startet den Container – ohne dass ich etwas von Hand tun muss.
 
-1. Bei [Render](https://render.com) **New → Blueprint** wählen und dieses Repository verbinden
-2. Region *Frankfurt* und Plan *Free* werden aus `render.yaml` übernommen
-3. Nach dem Build ist die Demo unter `https://<name>.onrender.com/Demo` erreichbar – live unter [blog-87ze.onrender.com](https://blog-87ze.onrender.com)
+Selbst starten geht genauso einfach:
+
+```bash
+docker build -t coreblog .
+docker run -p 8080:8080 coreblog
+```
+
+Eine `render.yaml` für Render ist weiterhin enthalten, falls man die Demo dort betreiben möchte.
 
 Im Container wird die Demo-Datenbank bei jedem Start und danach alle 6 Stunden neu aufgebaut.
 
@@ -225,6 +229,14 @@ Im Container wird die Demo-Datenbank bei jedem Start und danach alle 6 Stunden n
 - Nur technisch notwendige Cookies (Anmeldung, Formularschutz), kein Tracking, keine Analyse-Tools
 - Hinweise zum Datenschutz direkt an allen Formularen
 - [Impressum](https://amirrezaafshar.de/impressum) und [Datenschutzerklärung](https://amirrezaafshar.de/datenschutz) über `/impressum` und `/datenschutz`
+
+---
+
+## 🤖 Wie das Projekt entstanden ist
+
+Angefangen hat CoreBlog als Kursprojekt. Den großen Ausbau danach – .NET 8, Admin-Panel, Autorenbereich, Demo-Modus, das neue Design – habe ich zum größten Teil mit **Claude** gemacht, also per *Vibe Coding*: Ich habe beschrieben, was ich haben möchte, die Vorschläge gelesen, ausprobiert und so lange nachgeschärft, bis es gepasst hat.
+
+Ehrlich gesagt hat mich überrascht, wie schnell daraus eine Anwendung geworden ist, die wirklich funktioniert. Für mich war das eine richtig gute Erfahrung – nicht zuletzt, weil ich jede Änderung verstehen musste, um entscheiden zu können, ob sie bleibt.
 
 ---
 
