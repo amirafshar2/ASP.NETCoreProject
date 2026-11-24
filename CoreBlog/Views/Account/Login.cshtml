@@ -18,13 +18,16 @@
             @if (demo.Enabled)
             {
                 <div class="demo-hint">
-                    <i class="fa-solid fa-key mt-1"></i>
-                    <div>
-                        Demo ohne Registrierung: <a asp-controller="Demo" asp-action="Admin">als Admin</a> oder <a asp-controller="Demo" asp-action="Writer">als Autorin</a> anmelden.
-                        <div class="mt-1">Oder manuell: <code>@demo.AdminEmail</code> / <code>@demo.Password</code></div>
-                    </div>
+                    <i class="fa-solid fa-flask mt-1"></i>
+                    <div>Demo-Version: Es werden keine persönlichen Daten abgefragt. Wählen Sie eine Rolle und Sie sind sofort angemeldet.</div>
+                </div>
+                <div class="d-grid gap-3">
+                    <a class="btn btn-ink btn-lg" asp-controller="Demo" asp-action="Admin"><i class="fa-solid fa-user-shield me-2"></i>Anmelden als Admin</a>
+                    <a class="btn btn-outline-dark btn-lg" asp-controller="Demo" asp-action="Writer"><i class="fa-solid fa-pen-nib me-2"></i>Anmelden als Autorin</a>
                 </div>
             }
+            else
+            {
             <form asp-action="Login" method="post" novalidate>
                 <input type="hidden" asp-for="ReturnUrl" />
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -45,6 +48,7 @@
                 <button class="btn btn-ink btn-lg w-100" type="submit">Anmelden</button>
             </form>
             <p class="mt-4 text-center text-secondary">Noch kein Konto? <a asp-action="Register">Jetzt als Autor registrieren</a></p>
+            }
         </div>
     </div>
 </div>

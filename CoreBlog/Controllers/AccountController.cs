@@ -5,6 +5,7 @@ using CoreBlog.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace CoreBlog.Controllers
 {
@@ -13,9 +14,11 @@ namespace CoreBlog.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IWriterService _writers;
+        private readonly DemoOptions _demo;
 
-        public AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, IWriterService writers)
+        public AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, IWriterService writers, IOptions<DemoOptions> demo)
         {
+            _demo = demo.Value;
             _signInManager = signInManager;
             _userManager = userManager;
             _writers = writers;
@@ -27,6 +30,8 @@ namespace CoreBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            // Demo: keine Eingabe persönlicher Daten – nur die Ein-Klick-Buttons auf der Login-Seite
+            if (_demo.Enabled) return RedirectToAction(nameof(Login));
             if (!ModelState.IsValid) return View(model);
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
@@ -48,11 +53,12 @@ namespace CoreBlog.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register() => View(new RegisterViewModel());
+        public IActionResult Register() => _demo.Enabled ? RedirectToAction(nameof(Login)) : View(new RegisterViewModel());
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            if (_demo.Enabled) return RedirectToAction(nameof(Login));
             if (!ModelState.IsValid) return View(model);
 
             var user = new AppUser
